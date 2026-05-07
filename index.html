@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Learning - កម្មវិធីសិក្សាជំនាន់ថ្មី</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.csshttps://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --ios-bg: #f2f2f7;
+            --ios-card: rgba(255, 255, 255, 0.9);
+            --ios-accent: #007aff;
+            --ios-secondary: #8e8e93;
+            --ios-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #f2f2f7;
+            color: #1c1c1e;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .animate-spring { animation: springIn 0.8s var(--ios-easing) forwards; }
+        @keyframes springIn {
+            0% { transform: scale(0.85); opacity: 0; filter: blur(10px); }
+            100% { transform: scale(1); opacity: 1; filter: blur(0); }
+        }
+
+        #auth-screen {
+            position: fixed;
+            inset: 0;
+            background-color: white;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 24px;
+            transition: all 0.8s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        #auth-screen.hidden {
+            transform: scale(1.1);
+            opacity: 0;
+            filter: blur(20px);
+            pointer-events: none;
+        }
+
+        .ios-input-container {
+            background: #f2f2f7;
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+        }
+
+        .ios-btn-primary {
+            background: var(--ios-accent);
+            color: white;
+            padding: 18px;
+            border-radius: 16px;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 10px 20px rgba(0, 122, 255, 0.15);
+        }
+
+        #app-shell {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 32px 20px 140px 20px;
+        }
+        #app-shell.visible { opacity: 1; }
+
+        .glass-morphism {
+            background: var(--ios-card);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+        }
+
+        .ios-tab-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            height: 75px;
+            border-radius: 38px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .tab-item { 
+            color: var(--ios-secondary); 
+            transition: all 0.3s;
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .tab-item.active { color: var(--ios-accent); }
+
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: ios-reveal 0.5s var(--ios-easing); }
+
+        @keyframes ios-reveal {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .avatar-container { position: relative; width: 48px; height: 48px; }
+        .profile-avatar {
+            width: 100%; height: 100%;
+            background: #007aff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 600; font-size: 16px;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .online-dot {
+            position: absolute;
+            bottom: 1px; right: 1px;
+            width: 14px; height: 14px;
+            background: #34c759;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .subject-card {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            transition: all 0.3s var(--ios-easing);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .subject-card:active { transform: scale(0.95); background: #f9f9f9; }
+
+        /* GRADE SELECTION MODAL STYLE */
+        .grade-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            z-index: 6000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .grade-modal.active { display: flex; opacity: 1; }
+        .grade-content {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-top-left-radius: 35px;
+            border-top-right-radius: 35px;
+            padding: 30px 24px 50px 24px;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        .grade-modal.active .grade-content { transform: translateY(0); }
+
+        .grade-item {
+            background: #f2f2f7;
+            padding: 18px;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .grade-item:active { background: #e5e5ea; transform: scale(0.97); }
+
+        .owner-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000; font-size: 10px; font-weight: 800;
+            padding: 2px 9px; border-radius: 12px; margin-left: 8px;
+        }
+
+        .owner-controls {
+            display: none;
+        }
+        .owner-controls.active {
+            display: block;
+        }
+        .upload-file-btn {
+            background: #34c759;
+            color: white;
+        }
+        .uploaded-file-card {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 18px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .file-info {
+            margin-bottom: 12px;
+        }
+        .file-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .file-btn {
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .file-btn.view {
+            background: #007aff;
+            color: white;
+        }
+        .file-btn.delete {
+            background: #ff3b30;
+            color: white;
+        }
+        .file-btn:active {
+            transform: scale(0.95);
+        }
+
+        .owner-editable[contenteditable="true"] {
+            outline: 2px dashed rgba(255, 215, 0, 0.85);
+            border-radius: 8px;
+            padding: 2px 4px;
+        }
+
+        .loader {
+            border: 2.5px solid rgba(255,255,255,0.3);
+            border-top: 2.5px solid white;
+            border-radius: 50%;
+            width: 18px; height: 18px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Icon Colors */
+        .ic-math { background-color: #3b82f6; }
+        .ic-khmer { background-color: #f97316; }
+        .ic-chem { background-color: #a855f7; }
+        .ic-phys { background-color: #06b6d4; }
+        .ic-social { background-color: #10b981; }
+        .ic-english { background-color: #f43f5e; }
+    </style>
+</head>
+<body>
+
+    <!-- GRADE SELECTION MODAL -->
+    <div id="grade-modal" class="grade-modal" onclick="closeGradeModal(event)">
+        <div class="grade-content" onclick="event.stopPropagation()">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
+            <h3 class="text-2xl font-bold text-center mb-1" id="grade-modal-title">ជ្រើសរើសកម្រិតថ្នាក់</h3>
+            <p class="text-center text-gray-400 text-sm mb-8" id="grade-modal-subject">មុខវិជ្ជា៖ ...</p>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="grade-item" onclick="selectGrade(12)">ថ្នាក់ទី ១២</div>
+                <div class="grade-item" onclick="selectGrade(11)">ថ្នាក់ទី ១១</div>
+                <div class="grade-item" onclick="selectGrade(10)">ថ្នាក់ទី ១០</div>
+                <div class="grade-item" onclick="selectGrade(9)">ថ្នាក់ទី ៩</div>
+                <div class="grade-item" onclick="selectGrade(8)">ថ្នាក់ទី ៨</div>
+                <div class="grade-item" onclick="selectGrade(7)">ថ្នាក់ទី ៧</div>
+            </div>
+
+            <button onclick="closeGradeModal(null)" class="w-full mt-8 py-4 text-gray-400 font-bold">បោះបង់</button>
+        </div>
+    </div>
+
+    <div id="about-modal" class="preview-modal" onclick="closeAboutModal(event)">
+        <div class="preview-content" onclick="event.stopPropagation()">
+            <div class="preview-header">
+                <div>
+                    <h3 class="text-2xl font-bold">អំពីកម្មវិធីនេះ</h3>
+                    <p class="text-gray-500 mt-2">ព័ត៌មាននិងលម្អិត</p>
+                </div>
+                <button onclick="closeAboutModal(null)" class="file-action-btn delete">X</button>
+            </div>
+            <div class="preview-body">
+                <div class="lesson-card">
+                    <h4 class="font-bold mb-2">Smart Learning</h4>
+                    <p class="text-gray-600 text-sm">កម្មវិធីសិក្សាជំនាន់ថ្មីសម្រាប់សិស្សនៃបាន់ខ្មែរ</p>
+                </div>
+                <div class="lesson-card">
+                    <h4 class="font-bold mb-2">អ្នកបង្កើត</h4>
+                    <p class="text-gray-600 text-sm">ឈ្មោះរូបភាព: Bun MengHeng</p>
+                </div>
+                <div class="lesson-card">
+                    <h4 class="font-bold mb-2">លក្ខណៈពិសេស</h4>
+                    <p class="text-gray-600 text-sm mb-2">• រៀនសូត្របានលើឡើងលម្អិត</p>
+                    <p class="text-gray-600 text-sm mb-2">• ទាញយកឯកសារបានរៀងរាប់ដែលលម្អាង</p>
+                    <p class="text-gray-600 text-sm">• ចូលដល់ឬលឺនលម្អិតលម្អាងឆ្លស់</p>
+                </div>
+                <div class="lesson-card">
+                    <h4 class="font-bold mb-2">បច្ចេកវិទ្យា</h4>
+                    <p class="text-gray-600 text-sm">HTML5 • CSS3 • JavaScript • LocalStorage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen">
+        <div class="flex-1 flex flex-col justify-center items-center">
+            <div class="w-24 h-24 bg-blue-600 rounded-[28px] flex items-center justify-center text-white text-5xl mb-10 shadow-2xl animate-spring">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h2 class="text-3xl font-bold mb-2">Smart Learning</h2>
+            <p class="text-gray-400 text-sm mb-12">កម្មវិធីសិក្សាជំនាន់ថ្មីសម្រាប់សិស្សនៃបាន់ខ្មែរ</p>
+
+            <div class="w-full space-y-4">
+                <div class="ios-input-container">
+                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">ឈ្មោះសិស្ស</label>
+                    <input type="text" id="login-name" class="bg-transparent w-full outline-none text-[17px]" placeholder="ឈ្មោះពេញរបស់អ្នក">
+                </div>
+                <div class="ios-input-container">
+                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">ថ្នាក់</label>
+                    <input type="text" id="login-class" class="bg-transparent w-full outline-none text-[17px]" placeholder="សូមបញ្ចូលថ្នាក់របស់អ្នក">
+                </div>
+                <div class="ios-input-container">
+                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">សាលា</label>
+                    <input type="text" id="login-school" class="bg-transparent w-full outline-none text-[17px]" placeholder="ឈ្មោះសាលារបស់អ្នក">
+                </div>
+                <button onclick="handleLogin()" class="ios-btn-primary flex items-center justify-center space-x-3 mt-6 h-16">
+                    <span id="login-text">ចាប់ផ្ដើមរៀន</span>
+                    <div id="login-spinner" class="loader hidden"></div>
+                </button>
+            </div>
+        </div>
+        <div class="text-center text-gray-400 text-[11px] mb-6">
+            បង្កើតដោយ: <span class="text-blue-500 font-bold">Bun MengHeng</span>
+        </div>
+    </div>
+
+    <!-- APP SHELL -->
+    <main id="app-shell">
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <p class="text-gray-400 text-[12px] font-bold uppercase tracking-widest mb-1" id="date-label">...</p>
+                <h1 class="text-3xl font-bold tracking-tight" id="view-header">រៀនសូត្រ</h1>
+            </div>
+            <div class="avatar-container active:scale-90 transition-transform cursor-pointer" onclick="switchTab(null, 'profile-view', 'គណនី')">
+                <div class="profile-avatar shadow-lg" id="avatar-text">BM</div>
+                <div class="online-dot shadow-sm"></div>
+            </div>
+        </header>
+
+        <!-- VIEW: HOME (Subjects) -->
+        <div id="home-view" class="view-section active">
+            <h2 class="text-xl font-bold mb-6">មុខវិជ្ជាសិក្សា</h2>
+
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Subjects list -->
+                <div class="subject-card" onclick="openGradeModal('គណិតវិទ្យា')">
+                    <div class="w-11 h-11 ic-math rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-blue-100">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-math-title">គណិតវិទ្យា</h3>
+                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-math-desc">គ្រប់កម្រិតថ្នាក់</p>
+                </div>
+
+                <div class="subject-card" onclick="openGradeModal('ភាសាខ្មែរ')">
+                    <div class="w-11 h-11 ic-khmer rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-orange-100">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-khmer-title">ភាសាខ្មែរ</h3>
+                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-khmer-desc">គ្រប់កម្រិតថ្នាក់</p>
+                </div>
+
+                <div class="subject-card" onclick="openGradeModal('រូបវិទ្យា')">
+                    <div class="w-11 h-11 ic-phys rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-cyan-100">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-phys-title">រូបវិទ្យា</h3>
+                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-phys-desc">គ្រប់កម្រិតថ្នាក់</p>
+                </div>
+
+                <div class="subject-card" onclick="openGradeModal('គីមីវិទ្យា')">
+                    <div class="w-11 h-11 ic-chem rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-purple-100">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-chem-title">គីមីវិទ្យា</h3>
+                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-chem-desc">គ្រប់កម្រិតថ្នាក់</p>
+                </div>
+
+                <div class="subject-card" onclick="openGradeModal('សិក្សាសង្គម')">
+                    <div class="w-11 h-11 ic-social rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-green-100">
+                        <i class="fas fa-globe-asia"></i>
+                    </div>
+                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-social-title">សិក្សាសង្គម</h3>
+                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-social-desc">គ្រប់កម្រិតថ្នាក់</p>
+                </div>
+
+                <div class="subject-card" onclick="openGradeModal('ភាសាអង់គ្លេស')">
+                    <div class="w-11 h-11 ic-english rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-red-100">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-english-title">ភាសាអង់គ្លេស</h3>
+                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-english-desc">គ្រប់កម្រិតថ្នាក់</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: LIBRARY -->
+        <div id="library-view" class="view-section">
+            <h2 class="text-xl font-bold mb-6 owner-editable" data-edit-key="library-title">បណ្ណាល័យឌីជីថល</h2>
+            <div class="bg-white rounded-3xl p-10 flex flex-col items-center justify-center text-center">
+                <i class="fas fa-layer-group text-gray-100 text-6xl mb-4"></i>
+                <p class="text-gray-400 owner-editable" data-edit-key="library-empty-msg">មិនទាន់មានឯកសារនៅឡើយទេ</p>
+            </div>
+            <div id="uploaded-files-list" class="mt-8"></div>
+        </div>
+
+        <!-- VIEW: PROFILE -->
+        <div id="profile-view" class="view-section">
+            <div class="glass-morphism p-6 mb-8 flex items-center">
+                <div class="avatar-container w-16 h-16 mr-6">
+                    <div class="profile-avatar text-2xl" id="profile-avatar-large">BM</div>
+                    <div class="online-dot border-[3px] w-6 h-6"></div>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold" id="user-display-name">...</h2>
+                    <p class="text-gray-400 text-sm mt-1" id="user-class-school">...</p>
+                </div>
+            </div>
+            <div id="owner-controls" class="glass-morphism p-5 mb-6 hidden owner-controls">
+                <p class="text-sm text-gray-500 mb-4">Owner mode: ចូលទៅកាន់ការកែសម្រួល និងផ្ទុកឯកសារ។</p>
+                <button id="owner-edit-toggle" onclick="toggleOwnerEdit()" class="w-full p-4 bg-yellow-400 rounded-2xl text-black font-bold mb-3">
+                    កែសម្រួលទំព័រ
+                </button>
+                <button onclick="triggerFileUpload()" class="w-full p-4 upload-file-btn rounded-2xl font-bold">
+                    ផ្ទុកឯកសារ
+                </button>
+            </div>
+            <input type="file" id="upload-input" class="hidden" multiple onchange="handleFileUpload(event)">
+            <button onclick="openAboutModal()" class="w-full p-5 bg-white rounded-2xl text-blue-500 font-bold flex items-center justify-center mb-3">
+                <i class="fas fa-info-circle mr-3"></i> អំពីកម្មវិធីនេះ
+            </button>
+            <button onclick="handleLogout()" class="w-full p-5 bg-white rounded-2xl text-red-500 font-bold flex items-center justify-center">
+                <i class="fas fa-sign-out-alt mr-3"></i> ចាកចេញ
+            </button>
+        </div>
+
+        <!-- NAV BAR -->
+        <nav class="ios-tab-bar glass-morphism">
+            <div class="tab-item active" onclick="switchTab(this, 'home-view', 'រៀនសូត្រ')">
+                <i class="fas fa-home mb-1 text-xl"></i>
+                <span class="text-[10px] font-bold">មេ</span>
+            </div>
+            <div class="tab-item" onclick="switchTab(this, 'library-view', 'បណ្ណាល័យ')">
+                <i class="fas fa-book-reader mb-1 text-xl"></i>
+                <span class="text-[10px] font-bold">បណ្ណាល័យ</span>
+            </div>
+            <div class="tab-item" onclick="switchTab(this, 'profile-view', 'គណនី')">
+                <i class="fas fa-user mb-1 text-xl"></i>
+                <span class="text-[10px] font-bold">គណនី</span>
+            </div>
+        </nav>
+    </main>
+
+    <script>
+        const OWNER_NAME = "Bun MengHeng";
+        let currentSubject = "";
+        let currentUserName = "";
+        let currentUserClass = "";
+        let currentUserSchool = "";
+        let ownerEditActive = false;
+        let uploadedFiles = [];
+
+        const UPLOADED_FILES_KEY = 'uploadedFiles';
+
+        function handleLogin() {
+            const name = document.getElementById('login-name').value.trim();
+            const userClass = document.getElementById('login-class').value.trim();
+            const school = document.getElementById('login-school').value.trim();
+            if (!name || !userClass || !school) return;
+
+            document.getElementById('login-text').classList.add('hidden');
+            document.getElementById('login-spinner').classList.remove('hidden');
+
+            setTimeout(() => {
+                const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                document.getElementById('avatar-text').innerText = initials || "ST";
+                document.getElementById('profile-avatar-large').innerText = initials || "ST";
+                document.getElementById('user-display-name').innerHTML = `${name}${name === OWNER_NAME ? ' <span class="owner-badge">Owner</span>' : ''}`;
+                document.getElementById('user-class-school').innerText = `${userClass} - ${school}`;
+                currentUserName = name;
+                currentUserClass = userClass;
+                currentUserSchool = school;
+                renderOwnerControls();
+
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-shell').classList.add('visible');
+            }, 800);
+        }
+
+        function handleLogout() {
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('app-shell').classList.remove('visible');
+            document.getElementById('login-text').classList.remove('hidden');
+            document.getElementById('login-spinner').classList.add('hidden');
+            currentUserName = "";
+            currentUserClass = "";
+            currentUserSchool = "";
+            renderOwnerControls();
+        }
+
+        function triggerFileUpload() {
+            if (currentUserName !== OWNER_NAME) return;
+            document.getElementById('upload-input').click();
+        }
+
+        function handleFileUpload(event) {
+            if (currentUserName !== OWNER_NAME) return;
+            const files = Array.from(event.target.files || []);
+            if (!files.length) return;
+
+            files.forEach(file => {
+                uploadedFiles.unshift({
+                    file: file,
+                    name: file.name,
+                    type: file.type || 'unknown',
+                    sizeKB: Math.round(file.size / 1024),
+                    uploadedAt: new Date().toLocaleString()
+                });
+            });
+
+            renderLibraryFiles();
+            event.target.value = '';
+        }
+
+        function viewFile(index) {
+            const fileData = uploadedFiles[index];
+            if (!fileData || !fileData.file) return;
+
+            const url = URL.createObjectURL(fileData.file);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileData.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function renameFile(index) {
+            if (currentUserName !== OWNER_NAME) {
+                alert('មានតែម្ចាស់ទេដែលអាចកែឈ្មោះឯកសារបាន។');
+                return;
+            }
+            const file = uploadedFiles[index];
+            if (!file) return;
+            const newName = prompt('បញ្ចូលឈ្មោះឯកសារថ្មី:', file.name);
+            if (!newName || !newName.trim()) return;
+            file.name = newName.trim();
+            renderLibraryFiles();
+        }
+
+        function deleteFile(index) {
+            if (currentUserName !== OWNER_NAME) {
+                alert('មានតែម្ចាស់ទេដែលអាចលុបឯកសារបាន។');
+                return;
+            }
+            if (confirm('តើអ្នកចង់លុបឯកសារនេះមែនទេ?')) {
+                uploadedFiles.splice(index, 1);
+                saveUploadedFiles();
+                renderLibraryFiles();
+            }
+        }
+
+        function renderLibraryFiles() {
+            const container = document.getElementById('uploaded-files-list');
+            if (!container) return;
+
+            if (uploadedFiles.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-sm">មិនទាន់មានឯកសារត្រូវបានផ្ទុកឡើង។</p>`;
+                return;
+            }
+
+            container.innerHTML = uploadedFiles.map((file, index) => `
+                <div class="uploaded-file-card">
+                    <div class="file-info">
+                        <div class="font-bold mb-2">${file.name}</div>
+                        <div class="text-gray-500 text-sm">${file.type} · ${file.sizeKB} KB · ${file.uploadedAt}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="file-btn view" onclick="viewFile(${index})">មើល</button>
+                        <button class="file-btn edit" onclick="renameFile(${index})" ${currentUserName !== OWNER_NAME ? 'disabled style="opacity: 0.5;" title="មានតែម្ចាស់ទេដែលអាចកែឈ្មោះបាន"' : ''}>កែឈ្មោះ</button>
+                        <button class="file-btn delete" onclick="deleteFile(${index})" ${currentUserName !== OWNER_NAME ? 'disabled style="opacity: 0.5;" title="មានតែម្ចាស់ទេដែលអាចលុបបាន"' : ''}>លុប</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadUploadedFiles() {
+            // Files are session-only, no persistence
+            renderLibraryFiles();
+        }
+
+        function applySavedOwnerEdits() {
+            const saved = JSON.parse(localStorage.getItem('ownerEdits') || '{}');
+            Object.entries(saved).forEach(([key, value]) => {
+                const el = document.querySelector(`[data-edit-key="${key}"]`);
+                if (el) el.innerText = value;
+            });
+        }
+
+        function renderOwnerControls() {
+            const ownerControls = document.getElementById('owner-controls');
+            if (currentUserName === OWNER_NAME) {
+                ownerControls.classList.remove('hidden');
+            } else {
+                ownerControls.classList.add('hidden');
+                ownerEditActive = false;
+                disableOwnerEditing();
+            }
+        }
+
+        function toggleOwnerEdit() {
+            ownerEditActive = !ownerEditActive;
+            const toggleBtn = document.getElementById('owner-edit-toggle');
+            if (ownerEditActive) {
+                enableOwnerEditing();
+                toggleBtn.innerText = 'រក្សាទុកការកែប្រែ';
+            } else {
+                saveOwnerEdits();
+                disableOwnerEditing();
+                toggleBtn.innerText = 'កែសម្រួលទំព័រ';
+            }
+        }
+
+        function enableOwnerEditing() {
+            document.querySelectorAll('.owner-editable').forEach(el => {
+                el.setAttribute('contenteditable', 'true');
+            });
+        }
+
+        function disableOwnerEditing() {
+            document.querySelectorAll('.owner-editable').forEach(el => {
+                el.removeAttribute('contenteditable');
+            });
+        }
+
+        function saveOwnerEdits() {
+            const edits = {};
+            document.querySelectorAll('.owner-editable').forEach(el => {
+                edits[el.dataset.editKey] = el.innerText.trim();
+            });
+            localStorage.setItem('ownerEdits', JSON.stringify(edits));
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full text-sm z-[7000] animate-spring';
+            alertDiv.innerText = 'ការកែប្រែបានរក្សាទុក។';
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 2500);
+        }
+
+        function switchTab(el, viewId, title) {
+            if(el) {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                el.classList.add('active');
+            }
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('view-header').innerText = title;
+        }
+
+        // GRADE MODAL LOGIC
+        function openGradeModal(subject) {
+            currentSubject = subject;
+            document.getElementById('grade-modal-subject').innerText = "មុខវិជ្ជា៖ " + subject;
+            const modal = document.getElementById('grade-modal');
+            modal.classList.add('active');
+            if (window.navigator.vibrate) window.navigator.vibrate(15);
+        }
+
+        function closeGradeModal(e) {
+            document.getElementById('grade-modal').classList.remove('active');
+        }
+
+        function selectGrade(grade) {
+            closeGradeModal();
+            // បង្ហាញការស្វាគមន៍ ឬនាំទៅកាន់ទំព័រមេរៀន
+            setTimeout(() => {
+                const msg = `កំពុងរៀបចំមេរៀន ${currentSubject} សម្រាប់ថ្នាក់ទី ${grade}...`;
+                // ជំនួសដោយ Alert សាមញ្ញ (ក្នុងកម្មវិធីពិតនឹងប្តូរ View)
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-black/80 text-white px-6 py-3 rounded-full text-sm z-[7000] animate-spring';
+                alertDiv.innerText = msg;
+                document.body.appendChild(alertDiv);
+                setTimeout(() => alertDiv.remove(), 3000);
+            }, 400);
+        }
+
+        function openAboutModal() {
+            document.getElementById('about-modal').classList.add('active');
+        }
+
+        function closeAboutModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('about-modal').classList.remove('active');
+        }
+
+        window.onload = () => {
+            applySavedOwnerEdits();
+            loadUploadedFiles();
+            const days = ['អាទិត្យ', 'ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+            const months = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+            const d = new Date();
+            document.getElementById('date-label').innerText = `ថ្ងៃ${days[d.getDay()]} ទី${d.getDate()} ខែ${months[d.getMonth()]}`;
+        };
+    </script>
+</body>
+</html>
