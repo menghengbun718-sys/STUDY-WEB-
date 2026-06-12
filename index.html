@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="km">
 <head>
@@ -65,7 +64,7 @@
     <main class="flex-grow max-w-md md:max-w-4xl w-full mx-auto px-3 py-4 md:py-6 flex flex-col justify-start">
         
         <!-- ប្រអប់ជូនដំណឹង (Toast Notification Overlay) -->
-        <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform -translate-y-20 opacity-0 transition-all duration-300 z-50 pointer-events-none w-[90%] max-w-xs justify-center">
+        <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform -translate-y-20 opacity-0 transition-all duration-300 z-50">
             <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400 shrink-0"></i>
             <span id="toastMessage" class="text-xs md:text-sm font-medium leading-snug">សារដំណឹង</span>
         </div>
@@ -100,7 +99,7 @@
                         <!-- ចំនួនសិស្សសរុប (Total Students Info) -->
                         <div class="mt-2.5 flex justify-between items-center text-[11px] text-slate-400 px-1">
                             <span id="totalBadge" class="font-medium">សិស្សសរុប៖ ទាញយក...</span>
-                            <span class="text-indigo-600 font-bold cursor-pointer hover:underline active:opacity-60" id="clearSelectionBtn" style="display: none;" onclick="clearSelection()">លុបការជ្រើសរើស</span>
+                            <span class="text-indigo-600 font-bold cursor-pointer hover:underline active:opacity-60" id="clearSelectionBtn" style="display: none;" onclick="clearSelection()">លុប</span>
                         </div>
                     </div>
 
@@ -111,18 +110,18 @@
                                 <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span>
                                 <h2 class="text-sm md:text-base font-bold text-slate-800">២. បញ្ចូលឈ្មោះ / Enter Name</h2>
                             </div>
-                            <p class="text-[11px] md:text-xs text-slate-400 mb-3 leading-relaxed">ប្រសិនបើគ្មានឈ្មោះក្នុងបញ្ជីខាងឆ្វេងទេ សូមវាយបញ្ចូលឈ្មោះរបស់អ្នកនៅទីនេះដើម្បីបង្កើតកូដ។</p>
+                            <p class="text-[11px] md:text-xs text-slate-400 mb-3 leading-relaxed">ប្រសិនបើគ្មានឈ្មោះក្នុងបញ្ជីខាងឆ្វេង សូមបញ្ចូលឈ្មោះថ្មីនៅក្នុងប្រអប់ខាងក្រោម។</p>
 
                             <!-- ទម្រង់បញ្ចូលឈ្មោះ (Enter Name Form) -->
                             <div class="space-y-2.5">
                                 <div>
-                                    <label for="newStudentName" class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">ឈ្មោះសិស្ស (ភាសាខ្មែរ ឬឡាតាំង)</label>
+                                    <label for="newStudentName" class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">ឈ្មោះសិស្ស (ភាសាខ្មែរ ឬ English)</label>
                                     <!-- ផ្លាស់ប្តូរ placeholder ទៅជា Enter Name យ៉ាងជាក់លាក់ -->
                                     <input type="text" id="newStudentName" placeholder="Enter Name" 
-                                        class="w-full px-3 py-2.5 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-xs md:text-sm">
+                                        class="w-full px-3 py-2.5 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
                                 </div>
                                 <button id="registerBtn" onclick="registerNewStudent()" 
-                                    class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] active:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-all text-xs disabled:opacity-50">
+                                    class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] active:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all duration-200">
                                     <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> បញ្ចូលឈ្មោះ / Enter Name
                                 </button>
                             </div>
@@ -146,7 +145,7 @@
                         <p id="selectedNameDisplay" class="font-bold text-slate-800 text-xs md:text-sm mt-0.5 truncate">មិនទាន់ជ្រើសរើសឈ្មោះនៅឡើយទេ</p>
                     </div>
                     <button id="generateCodeBtn" disabled onclick="generateStudentCode()"
-                        class="w-full sm:w-auto bg-slate-200 text-slate-400 cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300 text-xs shadow-sm">
+                        class="w-full sm:w-auto bg-slate-200 text-slate-400 cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300 text-xs">
                         <i data-lucide="qr-code" class="w-4 h-4"></i> បង្កើតកូដ
                     </button>
                 </div>
@@ -160,7 +159,7 @@
                 </div>
 
                 <h2 class="text-lg md:text-xl font-black text-slate-900 mb-0.5">បង្កើតកូដបានជោគជ័យ!</h2>
-                <p class="text-slate-400 text-[10px] md:text-xs mb-5">សូមរក្សាទុក ឬចម្លងកូដសម្គាល់ខ្លួនរបស់អ្នកខាងក្រោម</p>
+                <p class="text-slate-400 text-[10px] md:text-xs mb-5">សូមរក្សាទុក ឬចម្លងកូដសម្គាល់ខ្លួនរបស់អ្នក ដើម្បីលុបលាយក្នុងឯកសារ។</p>
 
                 <!-- កាតកូដសិស្ស (Student Digital Pass Card) -->
                 <div class="w-full max-w-xs bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden mb-6 text-left">
@@ -211,10 +210,10 @@
 
                 <!-- ប៊ូតុងត្រឡប់ក្រោយ / Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-2 w-full max-w-xs">
-                    <button onclick="copyToClipboard()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all text-xs">
+                    <button onclick="copyToClipboard()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200">
                         <i data-lucide="copy" class="w-3.5 h-3.5"></i> ចម្លងកូដទុក
                     </button>
-                    <button onclick="resetApp()" class="flex-1 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 border border-slate-200 transition-all text-xs">
+                    <button onclick="resetApp()" class="flex-1 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200">
                         <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> ត្រឡប់ក្រោយ
                     </button>
                 </div>
@@ -346,7 +345,7 @@
             updateTotalBadge(students.length);
         }
 
-        // មុខងារជ្រើសរើសសិស្ស (Select Student)
+        // មុខងារជ្រើសរើсофия្ស (Select Student)
         window.selectStudent = function(id) {
             selectedStudentId = id;
             const student = students.find(s => s.id === id);
@@ -355,7 +354,7 @@
 
             const genBtn = document.getElementById('generateCodeBtn');
             genBtn.removeAttribute('disabled');
-            genBtn.className = "w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer transition-all text-xs";
+            genBtn.className = "w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all duration-200 text-xs";
 
             document.getElementById('selectedNameDisplay').innerHTML = `
                 <span class="text-indigo-600">${student.name}</span>
@@ -467,9 +466,9 @@
             clearSelection();
         }
 
-        // បង្ហាញចំនួនសិស្សសរុប
+        // បង្ហាញចំនួនសិស្ elisabeth
         function updateTotalBadge(count) {
-            document.getElementById('totalBadge').innerText = `សិស្សសរុប៖ ${count} នាក់`;
+            document.getElementById('totalBadge').innerText = `សិស្ lászló៖ ${count} នាក់`;
         }
 
         // បង្ហាញផ្ទាំងជូនដំណឹង (Toast Notification)
@@ -501,5 +500,3 @@
     </script>
 </body>
 </html>
-
-
