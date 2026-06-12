@@ -76,7 +76,7 @@
             <div id="setupView" class="block">
                 <div class="grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-slate-100">
                     
-                    <!-- ផ្នែកទី១៖ ជ្រើសរើសសិស្ស (Section 1: Select Student) -->
+                    <!-- ផ្នែកទី១៖ ជ្រើសរើsassិស្ស (Section 1: Select Student) -->
                     <div class="p-4 md:p-6 md:col-span-7 flex flex-col">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2">
@@ -110,7 +110,7 @@
                                 <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span>
                                 <h2 class="text-sm md:text-base font-bold text-slate-800">២. បញ្ចូលឈ្មោះ / Enter Name</h2>
                             </div>
-                            <p class="text-[11px] md:text-xs text-slate-400 mb-3 leading-relaxed">ប្រសិនបើគ្មានឈ្មោះក្នុងបញ្ជីខាងឆ្វេង សូមបញ្ចូលឈ្មោះថ្មីនៅក្នុងប្រអប់ខាងក្រោម។</p>
+                            <p class="text-[11px] md:text-xs text-slate-400 mb-3 leading-relaxed">ប្រសិនបើគ្មានឈ្មោះក្នុងបញ្ជីខាងឆ្វេង សូមបញ្ចូលឈ្មោះថ្មីក្នុងប្រអប់នេះ។</p>
 
                             <!-- ទម្រង់បញ្ចូលឈ្មោះ (Enter Name Form) -->
                             <div class="space-y-2.5">
@@ -118,7 +118,7 @@
                                     <label for="newStudentName" class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">ឈ្មោះសិស្ស (ភាសាខ្មែរ ឬ English)</label>
                                     <!-- ផ្លាស់ប្តូរ placeholder ទៅជា Enter Name យ៉ាងជាក់លាក់ -->
                                     <input type="text" id="newStudentName" placeholder="Enter Name" 
-                                        class="w-full px-3 py-2.5 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
+                                        class="w-full px-3 py-2.5 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all">
                                 </div>
                                 <button id="registerBtn" onclick="registerNewStudent()" 
                                     class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] active:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all duration-200">
@@ -159,7 +159,7 @@
                 </div>
 
                 <h2 class="text-lg md:text-xl font-black text-slate-900 mb-0.5">បង្កើតកូដបានជោគជ័យ!</h2>
-                <p class="text-slate-400 text-[10px] md:text-xs mb-5">សូមរក្សាទុក ឬចម្លងកូដសម្គាល់ខ្លួនរបស់អ្នក ដើម្បីលុបលាយក្នុងឯកសារ។</p>
+                <p class="text-slate-400 text-[10px] md:text-xs mb-5">សូមរក្សាទុក ឬចម្លងកូដសម្គាល់ខ្លួនរបស់អ្នក ដើម្បីប្រើប្រាស់ក្នុងគោលបំណងសិក្សា។</p>
 
                 <!-- កាតកូដសិស្ស (Student Digital Pass Card) -->
                 <div class="w-full max-w-xs bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden mb-6 text-left">
@@ -265,7 +265,7 @@
             lucide.createIcons();
             await initAuth();
 
-            // តាមដានស្ថានភាពគណនី និងទាញយកទិន្នន័យពេលវេលាជាក់ស្តែង (Real-time listener)
+            // តាមដានស្ថានភាពគណនី និងទាញយកទិន្នន័យពេលវេលាជាក់ស��តែង (Real-time listener)
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     currentUser = user;
@@ -345,7 +345,7 @@
             updateTotalBadge(students.length);
         }
 
-        // មុខងារជ្រើសរើсофия្ស (Select Student)
+        // មុខងារជ្រើសរើសិស្ស (Select Student)
         window.selectStudent = function(id) {
             selectedStudentId = id;
             const student = students.find(s => s.id === id);
@@ -466,9 +466,9 @@
             clearSelection();
         }
 
-        // បង្ហាញចំនួនសិស្ elisabeth
+        // បង្ហាញចំនួនសិស្ស (Update Total Students Count)
         function updateTotalBadge(count) {
-            document.getElementById('totalBadge').innerText = `សិស្ lászló៖ ${count} នាក់`;
+            document.getElementById('totalBadge').innerText = `សិស្សសរុប៖ ${count} នាក់`;
         }
 
         // បង្ហាញផ្ទាំងជូនដំណឹង (Toast Notification)
