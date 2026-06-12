@@ -1,736 +1,505 @@
+```html
 <!DOCTYPE html>
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Learning - កម្មវិធីសិក្សាជំនាន់ថ្មី</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ប្រព័ន្ធជ្រើសរើសឈ្មោះ និងបង្កើតកូដសិស្ស</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.csshttps://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts for Khmer Language -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Noto+Sans+Khmer:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap');
-
-        :root {
-            --ios-bg: #f2f2f7;
-            --ios-card: rgba(255, 255, 255, 0.9);
-            --ios-accent: #007aff;
-            --ios-secondary: #8e8e93;
-            --ios-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
         body {
-            font-family: 'Kantumruy Pro', sans-serif;
-            background-color: #f2f2f7;
-            color: #1c1c1e;
-            overflow-x: hidden;
+            font-family: 'Kantumruy Pro', 'Noto Sans Khmer', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
-
-        .animate-spring { animation: springIn 0.8s var(--ios-easing) forwards; }
-        @keyframes springIn {
-            0% { transform: scale(0.85); opacity: 0; filter: blur(10px); }
-            100% { transform: scale(1); opacity: 1; filter: blur(0); }
+        /* Custom scrollbar for student list to keep it minimal and clean */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
         }
-
-        #auth-screen {
-            position: fixed;
-            inset: 0;
-            background-color: white;
-            z-index: 5000;
-            display: flex;
-            flex-direction: column;
-            padding: 40px 24px;
-            transition: all 0.8s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-
-        #auth-screen.hidden {
-            transform: scale(1.1);
-            opacity: 0;
-            filter: blur(20px);
-            pointer-events: none;
-        }
-
-        .ios-input-container {
-            background: #f2f2f7;
-            border-radius: 14px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-        }
-
-        .ios-btn-primary {
-            background: var(--ios-accent);
-            color: white;
-            padding: 18px;
-            border-radius: 16px;
-            font-weight: 600;
-            text-align: center;
-            width: 100%;
-            box-shadow: 0 10px 20px rgba(0, 122, 255, 0.15);
-        }
-
-        #app-shell {
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            height: 100vh;
-            overflow-y: auto;
-            padding: 32px 20px 140px 20px;
-        }
-        #app-shell.visible { opacity: 1; }
-
-        .glass-morphism {
-            background: var(--ios-card);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 24px;
-        }
-
-        .ios-tab-bar {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 94%;
-            height: 75px;
-            border-radius: 38px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-        }
-
-        .tab-item { 
-            color: var(--ios-secondary); 
-            transition: all 0.3s;
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-        .tab-item.active { color: var(--ios-accent); }
-
-        .view-section { display: none; }
-        .view-section.active { display: block; animation: ios-reveal 0.5s var(--ios-easing); }
-
-        @keyframes ios-reveal {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .avatar-container { position: relative; width: 48px; height: 48px; }
-        .profile-avatar {
-            width: 100%; height: 100%;
-            background: #007aff;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 600; font-size: 16px;
-            border: 2px solid white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .online-dot {
-            position: absolute;
-            bottom: 1px; right: 1px;
-            width: 14px; height: 14px;
-            background: #34c759;
-            border: 2px solid white;
-            border-radius: 50%;
-        }
-
-        .subject-card {
-            background: white;
-            border-radius: 28px;
-            padding: 20px;
-            transition: all 0.3s var(--ios-easing);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-        }
-        .subject-card:active { transform: scale(0.95); background: #f9f9f9; }
-
-        /* GRADE SELECTION MODAL STYLE */
-        .grade-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(8px);
-            z-index: 6000;
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .grade-modal.active { display: flex; opacity: 1; }
-        .grade-content {
-            background: white;
-            width: 100%;
-            max-width: 500px;
-            border-top-left-radius: 35px;
-            border-top-right-radius: 35px;
-            padding: 30px 24px 50px 24px;
-            transform: translateY(100%);
-            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-        .grade-modal.active .grade-content { transform: translateY(0); }
-
-        .grade-item {
-            background: #f2f2f7;
-            padding: 18px;
-            border-radius: 20px;
-            text-align: center;
-            font-weight: 600;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .grade-item:active { background: #e5e5ea; transform: scale(0.97); }
-
-        .owner-badge {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000; font-size: 10px; font-weight: 800;
-            padding: 2px 9px; border-radius: 12px; margin-left: 8px;
-        }
-
-        .owner-controls {
-            display: none;
-        }
-        .owner-controls.active {
-            display: block;
-        }
-        .upload-file-btn {
-            background: #34c759;
-            color: white;
-        }
-        .uploaded-file-card {
-            background: #ffffff;
-            border-radius: 22px;
-            padding: 18px;
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-            margin-bottom: 12px;
-            display: flex;
-            flex-direction: column;
-        }
-        .file-info {
-            margin-bottom: 12px;
-        }
-        .file-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-        .file-btn {
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .file-btn.view {
-            background: #007aff;
-            color: white;
-        }
-        .file-btn.delete {
-            background: #ff3b30;
-            color: white;
-        }
-        .file-btn:active {
-            transform: scale(0.95);
-        }
-
-        .owner-editable[contenteditable="true"] {
-            outline: 2px dashed rgba(255, 215, 0, 0.85);
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
             border-radius: 8px;
-            padding: 2px 4px;
         }
-
-        .loader {
-            border: 2.5px solid rgba(255,255,255,0.3);
-            border-top: 2.5px solid white;
-            border-radius: 50%;
-            width: 18px; height: 18px;
-            animation: spin 0.8s linear infinite;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
         }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Icon Colors */
-        .ic-math { background-color: #3b82f6; }
-        .ic-khmer { background-color: #f97316; }
-        .ic-chem { background-color: #a855f7; }
-        .ic-phys { background-color: #06b6d4; }
-        .ic-social { background-color: #10b981; }
-        .ic-english { background-color: #f43f5e; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col antialiased">
 
-    <!-- GRADE SELECTION MODAL -->
-    <div id="grade-modal" class="grade-modal" onclick="closeGradeModal(event)">
-        <div class="grade-content" onclick="event.stopPropagation()">
-            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
-            <h3 class="text-2xl font-bold text-center mb-1" id="grade-modal-title">ជ្រើសរើសកម្រិតថ្នាក់</h3>
-            <p class="text-center text-gray-400 text-sm mb-8" id="grade-modal-subject">មុខវិជ្ជា៖ ...</p>
+    <!-- របារក្បាលទំព័រ / Sticky Header (Compact on Mobile) -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm safe-top">
+        <div class="max-w-md md:max-w-4xl mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-100">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 md:w-6 md:h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm md:text-lg text-slate-900 leading-tight">ប្រព័ន្ធកូដសិស្ស (Cloud)</h1>
+                    <p class="text-[10px] md:text-xs text-slate-500">ទិន្នន័យរួមគ្នា និងផ្សាយបន្តផ្ទាល់</p>
+                </div>
+            </div>
             
-            <div class="grid grid-cols-2 gap-4">
-                <div class="grade-item" onclick="selectGrade(12)">ថ្នាក់ទី ១២</div>
-                <div class="grade-item" onclick="selectGrade(11)">ថ្នាក់ទី ១១</div>
-                <div class="grade-item" onclick="selectGrade(10)">ថ្នាក់ទី ១០</div>
-                <div class="grade-item" onclick="selectGrade(9)">ថ្នាក់ទី ៩</div>
-                <div class="grade-item" onclick="selectGrade(8)">ថ្នាក់ទី ៨</div>
-                <div class="grade-item" onclick="selectGrade(7)">ថ្នាក់ទី ៧</div>
-            </div>
-
-            <button onclick="closeGradeModal(null)" class="w-full mt-8 py-4 text-gray-400 font-bold">បោះបង់</button>
-        </div>
-    </div>
-
-    <div id="about-modal" class="preview-modal" onclick="closeAboutModal(event)">
-        <div class="preview-content" onclick="event.stopPropagation()">
-            <div class="preview-header">
-                <div>
-                    <h3 class="text-2xl font-bold">អំពីកម្មវិធីនេះ</h3>
-                    <p class="text-gray-500 mt-2">ព័ត៌មាននិងលម្អិត</p>
-                </div>
-                <button onclick="closeAboutModal(null)" class="file-action-btn delete">X</button>
-            </div>
-            <div class="preview-body">
-                <div class="lesson-card">
-                    <h4 class="font-bold mb-2">Smart Learning</h4>
-                    <p class="text-gray-600 text-sm">កម្មវិធីសិក្សាជំនាន់ថ្មីសម្រាប់សិស្សនៃបាន់ខ្មែរ</p>
-                </div>
-                <div class="lesson-card">
-                    <h4 class="font-bold mb-2">អ្នកបង្កើត</h4>
-                    <p class="text-gray-600 text-sm">ឈ្មោះរូបភាព: Bun MengHeng</p>
-                </div>
-                <div class="lesson-card">
-                    <h4 class="font-bold mb-2">លក្ខណៈពិសេស</h4>
-                    <p class="text-gray-600 text-sm mb-2">• រៀនសូត្របានលើឡើងលម្អិត</p>
-                    <p class="text-gray-600 text-sm mb-2">• ទាញយកឯកសារបានរៀងរាប់ដែលលម្អាង</p>
-                    <p class="text-gray-600 text-sm">• ចូលដល់ឬលឺនលម្អិតលម្អាងឆ្លស់</p>
-                </div>
-                <div class="lesson-card">
-                    <h4 class="font-bold mb-2">បច្ចេកវិទ្យា</h4>
-                    <p class="text-gray-600 text-sm">HTML5 • CSS3 • JavaScript • LocalStorage</p>
-                </div>
+            <!-- សញ្ញាសម្គាល់ការភ្ជាប់ទិន្នន័យ (Connection Status) -->
+            <div class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-medium border border-emerald-100">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span class="text-[10px] md:text-xs">ផ្សាយផ្ទាល់</span>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- AUTH SCREEN -->
-    <div id="auth-screen">
-        <div class="flex-1 flex flex-col justify-center items-center">
-            <div class="w-24 h-24 bg-blue-600 rounded-[28px] flex items-center justify-center text-white text-5xl mb-10 shadow-2xl animate-spring">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h2 class="text-3xl font-bold mb-2">Smart Learning</h2>
-            <p class="text-gray-400 text-sm mb-12">កម្មវិធីសិក្សាជំនាន់ថ្មីសម្រាប់សិស្សនៃបាន់ខ្មែរ</p>
-
-            <div class="w-full space-y-4">
-                <div class="ios-input-container">
-                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">ឈ្មោះសិស្ស</label>
-                    <input type="text" id="login-name" class="bg-transparent w-full outline-none text-[17px]" placeholder="ឈ្មោះពេញរបស់អ្នក">
-                </div>
-                <div class="ios-input-container">
-                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">ថ្នាក់</label>
-                    <input type="text" id="login-class" class="bg-transparent w-full outline-none text-[17px]" placeholder="សូមបញ្ចូលថ្នាក់របស់អ្នក">
-                </div>
-                <div class="ios-input-container">
-                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">សាលា</label>
-                    <input type="text" id="login-school" class="bg-transparent w-full outline-none text-[17px]" placeholder="ឈ្មោះសាលារបស់អ្នក">
-                </div>
-                <button onclick="handleLogin()" class="ios-btn-primary flex items-center justify-center space-x-3 mt-6 h-16">
-                    <span id="login-text">ចាប់ផ្ដើមរៀន</span>
-                    <div id="login-spinner" class="loader hidden"></div>
-                </button>
-            </div>
+    <!-- មាតិកាចម្បង / Main Content -->
+    <main class="flex-grow max-w-md md:max-w-4xl w-full mx-auto px-3 py-4 md:py-6 flex flex-col justify-start">
+        
+        <!-- ប្រអប់ជូនដំណឹង (Toast Notification Overlay) -->
+        <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform -translate-y-20 opacity-0 transition-all duration-300 z-50 pointer-events-none w-[90%] max-w-xs justify-center">
+            <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+            <span id="toastMessage" class="text-xs md:text-sm font-medium leading-snug">សារដំណឹង</span>
         </div>
-        <div class="text-center text-gray-400 text-[11px] mb-6">
-            បង្កើតដោយ: <span class="text-blue-500 font-bold">Bun MengHeng</span>
-        </div>
-    </div>
 
-    <!-- APP SHELL -->
-    <main id="app-shell">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <p class="text-gray-400 text-[12px] font-bold uppercase tracking-widest mb-1" id="date-label">...</p>
-                <h1 class="text-3xl font-bold tracking-tight" id="view-header">រៀនសូត្រ</h1>
-            </div>
-            <div class="avatar-container active:scale-90 transition-transform cursor-pointer" onclick="switchTab(null, 'profile-view', 'គណនី')">
-                <div class="profile-avatar shadow-lg" id="avatar-text">BM</div>
-                <div class="online-dot shadow-sm"></div>
-            </div>
-        </header>
+        <!-- កាតមេ / Main Interactive Card Container -->
+        <div class="bg-white rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden transition-all duration-500 flex flex-col" id="mainCard">
+            
+            <!-- ១. ទំព័រជ្រើសរើស និងបញ្ចូលឈ្មោះ (Selection & Input Panel) -->
+            <div id="setupView" class="block">
+                <div class="grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                    
+                    <!-- ផ្នែកទី១៖ ជ្រើសរើសសិស្ស (Section 1: Select Student) -->
+                    <div class="p-4 md:p-6 md:col-span-7 flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-5 bg-indigo-600 rounded-full"></span>
+                                <h2 class="text-sm md:text-base font-bold text-slate-800">១. ជ្រើសរើសឈ្មោះរបស់អ្នក</h2>
+                            </div>
+                            <!-- Loading Spinner on Synced -->
+                            <div id="loadingDatabase" class="text-slate-400">
+                                <div class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-500 border-t-transparent"></div>
+                            </div>
+                        </div>
 
-        <!-- VIEW: HOME (Subjects) -->
-        <div id="home-view" class="view-section active">
-            <h2 class="text-xl font-bold mb-6">មុខវិជ្ជាសិក្សា</h2>
+                        <!-- បញ្ជីឈ្មោះសិស្ស (Student List Box with height limits) -->
+                        <div class="border border-slate-200/60 rounded-xl overflow-hidden bg-slate-50/30">
+                            <div class="max-h-[220px] md:max-h-[280px] overflow-y-auto p-1.5 custom-scrollbar space-y-1" id="studentListContainer">
+                                <!-- Student items will be injected here dynamically -->
+                            </div>
+                        </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <!-- Subjects list -->
-                <div class="subject-card" onclick="openGradeModal('គណិតវិទ្យា')">
-                    <div class="w-11 h-11 ic-math rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-blue-100">
-                        <i class="fas fa-calculator"></i>
+                        <!-- ចំនួនសិស្សសរុប (Total Students Info) -->
+                        <div class="mt-2.5 flex justify-between items-center text-[11px] text-slate-400 px-1">
+                            <span id="totalBadge" class="font-medium">សិស្សសរុប៖ ទាញយក...</span>
+                            <span class="text-indigo-600 font-bold cursor-pointer hover:underline active:opacity-60" id="clearSelectionBtn" style="display: none;" onclick="clearSelection()">លុបការជ្រើសរើស</span>
+                        </div>
                     </div>
-                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-math-title">គណិតវិទ្យា</h3>
-                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-math-desc">គ្រប់កម្រិតថ្នាក់</p>
+
+                    <!-- ផ្នែកទី២៖ បញ្ចូលឈ្មោះ (Section 2: Enter Name) -->
+                    <div class="p-4 md:p-6 md:col-span-5 bg-slate-50/20 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span>
+                                <h2 class="text-sm md:text-base font-bold text-slate-800">២. បញ្ចូលឈ្មោះ / Enter Name</h2>
+                            </div>
+                            <p class="text-[11px] md:text-xs text-slate-400 mb-3 leading-relaxed">ប្រសិនបើគ្មានឈ្មោះក្នុងបញ្ជីខាងឆ្វេងទេ សូមវាយបញ្ចូលឈ្មោះរបស់អ្នកនៅទីនេះដើម្បីបង្កើតកូដ។</p>
+
+                            <!-- ទម្រង់បញ្ចូលឈ្មោះ (Enter Name Form) -->
+                            <div class="space-y-2.5">
+                                <div>
+                                    <label for="newStudentName" class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">ឈ្មោះសិស្ស (ភាសាខ្មែរ ឬឡាតាំង)</label>
+                                    <!-- ផ្លាស់ប្តូរ placeholder ទៅជា Enter Name យ៉ាងជាក់លាក់ -->
+                                    <input type="text" id="newStudentName" placeholder="Enter Name" 
+                                        class="w-full px-3 py-2.5 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-xs md:text-sm">
+                                </div>
+                                <button id="registerBtn" onclick="registerNewStudent()" 
+                                    class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] active:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-all text-xs disabled:opacity-50">
+                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> បញ្ចូលឈ្មោះ / Enter Name
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ព័ត៌មានណែនាំ / Hint Info -->
+                        <div class="mt-4 pt-3 border-t border-slate-100 hidden md:block">
+                            <div class="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
+                                <i data-lucide="cloud-lightning" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                <span>ទិន្នន័យត្រូវបានភ្ជាប់គ្នាក្នុងពេលជាក់ស្តែង (Real-time)។</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="subject-card" onclick="openGradeModal('ភាសាខ្មែរ')">
-                    <div class="w-11 h-11 ic-khmer rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-orange-100">
-                        <i class="fas fa-book-open"></i>
+                <!-- របារសកម្មភាពបង្កើតកូដ (Sticky Bottom Action Bar) -->
+                <div class="bg-slate-50 px-4 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-center sm:text-left w-full sm:w-auto">
+                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">ឈ្មោះដែលបានជ្រើសរើស៖</p>
+                        <p id="selectedNameDisplay" class="font-bold text-slate-800 text-xs md:text-sm mt-0.5 truncate">មិនទាន់ជ្រើសរើសឈ្មោះនៅឡើយទេ</p>
                     </div>
-                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-khmer-title">ភាសាខ្មែរ</h3>
-                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-khmer-desc">គ្រប់កម្រិតថ្នាក់</p>
-                </div>
-
-                <div class="subject-card" onclick="openGradeModal('រូបវិទ្យា')">
-                    <div class="w-11 h-11 ic-phys rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-cyan-100">
-                        <i class="fas fa-atom"></i>
-                    </div>
-                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-phys-title">រូបវិទ្យា</h3>
-                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-phys-desc">គ្រប់កម្រិតថ្នាក់</p>
-                </div>
-
-                <div class="subject-card" onclick="openGradeModal('គីមីវិទ្យា')">
-                    <div class="w-11 h-11 ic-chem rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-purple-100">
-                        <i class="fas fa-vial"></i>
-                    </div>
-                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-chem-title">គីមីវិទ្យា</h3>
-                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-chem-desc">គ្រប់កម្រិតថ្នាក់</p>
-                </div>
-
-                <div class="subject-card" onclick="openGradeModal('សិក្សាសង្គម')">
-                    <div class="w-11 h-11 ic-social rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-green-100">
-                        <i class="fas fa-globe-asia"></i>
-                    </div>
-                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-social-title">សិក្សាសង្គម</h3>
-                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-social-desc">គ្រប់កម្រិតថ្នាក់</p>
-                </div>
-
-                <div class="subject-card" onclick="openGradeModal('ភាសាអង់គ្លេស')">
-                    <div class="w-11 h-11 ic-english rounded-2xl flex items-center justify-center text-white text-xl mb-4 shadow-lg shadow-red-100">
-                        <i class="fas fa-language"></i>
-                    </div>
-                    <h3 class="font-bold text-[15px] owner-editable" data-edit-key="subject-english-title">ភាសាអង់គ្លេស</h3>
-                    <p class="text-gray-400 text-[11px] mt-1 owner-editable" data-edit-key="subject-english-desc">គ្រប់កម្រិតថ្នាក់</p>
+                    <button id="generateCodeBtn" disabled onclick="generateStudentCode()"
+                        class="w-full sm:w-auto bg-slate-200 text-slate-400 cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300 text-xs shadow-sm">
+                        <i data-lucide="qr-code" class="w-4 h-4"></i> បង្កើតកូដ
+                    </button>
                 </div>
             </div>
+
+            <!-- ២. ទំព័របង្ហាញកូដជោគជ័យ (Success Code Generation View) -->
+            <div id="successView" class="hidden p-5 md:p-10 text-center flex flex-col items-center">
+                <!-- ចលនាជោគជ័យ (Success Animation Icon) -->
+                <div class="w-14 h-14 md:w-18 md:h-18 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-4 border-4 border-emerald-100">
+                    <i data-lucide="check" class="w-7 h-7 md:w-9 md:h-9"></i>
+                </div>
+
+                <h2 class="text-lg md:text-xl font-black text-slate-900 mb-0.5">បង្កើតកូដបានជោគជ័យ!</h2>
+                <p class="text-slate-400 text-[10px] md:text-xs mb-5">សូមរក្សាទុក ឬចម្លងកូដសម្គាល់ខ្លួនរបស់អ្នកខាងក្រោម</p>
+
+                <!-- កាតកូដសិស្ស (Student Digital Pass Card) -->
+                <div class="w-full max-w-xs bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden mb-6 text-left">
+                    <div class="absolute -right-8 -bottom-8 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                    <div class="absolute -left-8 -top-8 w-20 h-20 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                    
+                    <!-- ក្បាលកាត / Card Header -->
+                    <div class="flex justify-between items-start border-b border-white/20 pb-3 mb-3">
+                        <div>
+                            <p class="text-[8px] uppercase tracking-widest text-indigo-200">Student Identity Card</p>
+                            <h3 class="font-bold text-xs md:text-sm mt-0.5 text-white">កាតសម្គាល់សិស្ស</h3>
+                        </div>
+                        <div class="bg-white/10 p-1 rounded-lg border border-white/10">
+                            <i data-lucide="graduation-cap" class="w-4 h-4 text-white"></i>
+                        </div>
+                    </div>
+
+                    <!-- ព័ត៌មានសិស្ស / Student Card Body -->
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-[8px] text-indigo-200 uppercase tracking-wider">ឈ្មោះសិស្ស / Name</p>
+                            <p id="cardStudentName" class="font-bold text-sm md:text-base text-white">សុខ ជា</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <p class="text-[8px] text-indigo-200 uppercase tracking-wider">កាលបរិច្ឆេទ / Date</p>
+                                <p id="cardGenDate" class="font-semibold text-[11px] text-white">១១ មិថុនា ២០២៦</p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] text-indigo-200 uppercase tracking-wider">ស្ថានភាព / Status</p>
+                                <p class="font-semibold text-[11px] text-white flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> សកម្ម</p>
+                            </div>
+                        </div>
+
+                        <!-- កូដសម្គាល់ / The Generated Code Area -->
+                        <div class="bg-black/25 rounded-xl p-2.5 border border-white/10 flex items-center justify-between">
+                            <div>
+                                <p class="text-[7px] text-indigo-200 uppercase tracking-wider">កូដសិស្ស / ID Code</p>
+                                <p id="cardStudentCode" class="font-mono font-bold text-sm tracking-wider text-yellow-300">ACD-0000-KH</p>
+                            </div>
+                            <button onclick="copyToClipboard()" class="bg-white/10 hover:bg-white/20 active:scale-95 text-white p-1.5 rounded-lg transition-all" title="ចម្លងកូដ">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ប៊ូតុងត្រឡប់ក្រោយ / Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-2 w-full max-w-xs">
+                    <button onclick="copyToClipboard()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all text-xs">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> ចម្លងកូដទុក
+                    </button>
+                    <button onclick="resetApp()" class="flex-1 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 border border-slate-200 transition-all text-xs">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> ត្រឡប់ក្រោយ
+                    </button>
+                </div>
+            </div>
+
         </div>
 
-        <!-- VIEW: LIBRARY -->
-        <div id="library-view" class="view-section">
-            <h2 class="text-xl font-bold mb-6 owner-editable" data-edit-key="library-title">បណ្ណាល័យឌីជីថល</h2>
-            <div class="bg-white rounded-3xl p-10 flex flex-col items-center justify-center text-center">
-                <i class="fas fa-layer-group text-gray-100 text-6xl mb-4"></i>
-                <p class="text-gray-400 owner-editable" data-edit-key="library-empty-msg">មិនទាន់មានឯកសារនៅឡើយទេ</p>
-            </div>
-            <div id="uploaded-files-list" class="mt-8"></div>
-        </div>
-
-        <!-- VIEW: PROFILE -->
-        <div id="profile-view" class="view-section">
-            <div class="glass-morphism p-6 mb-8 flex items-center">
-                <div class="avatar-container w-16 h-16 mr-6">
-                    <div class="profile-avatar text-2xl" id="profile-avatar-large">BM</div>
-                    <div class="online-dot border-[3px] w-6 h-6"></div>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold" id="user-display-name">...</h2>
-                    <p class="text-gray-400 text-sm mt-1" id="user-class-school">...</p>
-                </div>
-            </div>
-            <div id="owner-controls" class="glass-morphism p-5 mb-6 hidden owner-controls">
-                <p class="text-sm text-gray-500 mb-4">Owner mode: ចូលទៅកាន់ការកែសម្រួល និងផ្ទុកឯកសារ។</p>
-                <button id="owner-edit-toggle" onclick="toggleOwnerEdit()" class="w-full p-4 bg-yellow-400 rounded-2xl text-black font-bold mb-3">
-                    កែសម្រួលទំព័រ
-                </button>
-                <button onclick="triggerFileUpload()" class="w-full p-4 upload-file-btn rounded-2xl font-bold">
-                    ផ្ទុកឯកសារ
-                </button>
-            </div>
-            <input type="file" id="upload-input" class="hidden" multiple onchange="handleFileUpload(event)">
-            <button onclick="openAboutModal()" class="w-full p-5 bg-white rounded-2xl text-blue-500 font-bold flex items-center justify-center mb-3">
-                <i class="fas fa-info-circle mr-3"></i> អំពីកម្មវិធីនេះ
-            </button>
-            <button onclick="handleLogout()" class="w-full p-5 bg-white rounded-2xl text-red-500 font-bold flex items-center justify-center">
-                <i class="fas fa-sign-out-alt mr-3"></i> ចាកចេញ
-            </button>
-        </div>
-
-        <!-- NAV BAR -->
-        <nav class="ios-tab-bar glass-morphism">
-            <div class="tab-item active" onclick="switchTab(this, 'home-view', 'រៀនសូត្រ')">
-                <i class="fas fa-home mb-1 text-xl"></i>
-                <span class="text-[10px] font-bold">មេ</span>
-            </div>
-            <div class="tab-item" onclick="switchTab(this, 'library-view', 'បណ្ណាល័យ')">
-                <i class="fas fa-book-reader mb-1 text-xl"></i>
-                <span class="text-[10px] font-bold">បណ្ណាល័យ</span>
-            </div>
-            <div class="tab-item" onclick="switchTab(this, 'profile-view', 'គណនី')">
-                <i class="fas fa-user mb-1 text-xl"></i>
-                <span class="text-[10px] font-bold">គណនី</span>
-            </div>
-        </nav>
     </main>
 
-    <script>
-        const OWNER_NAME = "Bun MengHeng";
-        let currentSubject = "";
-        let currentUserName = "";
-        let currentUserClass = "";
-        let currentUserSchool = "";
-        let ownerEditActive = false;
-        let uploadedFiles = [];
+    <!-- ជើងទំព័រ / Footer -->
+    <footer class="bg-white border-t border-slate-100 py-3 text-center text-[10px] text-slate-400 mt-auto safe-bottom">
+        <p>© ២០២៦ ប្រព័ន្ធគ្រប់គ្រងសាលារៀនឌីជីថល (ភ្ជាប់ប្រព័ន្ធពពក)។</p>
+    </footer>
 
-        const UPLOADED_FILES_KEY = 'uploadedFiles';
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        function handleLogin() {
-            const name = document.getElementById('login-name').value.trim();
-            const userClass = document.getElementById('login-class').value.trim();
-            const school = document.getElementById('login-school').value.trim();
-            if (!name || !userClass || !school) return;
+        // បណ្តុំអថេរ និងការកំណត់ទិន្នន័យ / Global Variables
+        let students = [];
+        let selectedStudentId = null;
+        let currentUser = null;
 
-            document.getElementById('login-text').classList.add('hidden');
-            document.getElementById('login-spinner').classList.remove('hidden');
+        // ការកំណត់រចនាសម្ព័ន្ធ Firebase ពីប្រព័ន្ធសុវត្ថិភាព
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-            setTimeout(() => {
-                const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                document.getElementById('avatar-text').innerText = initials || "ST";
-                document.getElementById('profile-avatar-large').innerText = initials || "ST";
-                document.getElementById('user-display-name').innerHTML = `${name}${name === OWNER_NAME ? ' <span class="owner-badge">Owner</span>' : ''}`;
-                document.getElementById('user-class-school').innerText = `${userClass} - ${school}`;
-                currentUserName = name;
-                currentUserClass = userClass;
-                currentUserSchool = school;
-                renderOwnerControls();
-
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-shell').classList.add('visible');
-            }, 800);
-        }
-
-        function handleLogout() {
-            document.getElementById('auth-screen').classList.remove('hidden');
-            document.getElementById('app-shell').classList.remove('visible');
-            document.getElementById('login-text').classList.remove('hidden');
-            document.getElementById('login-spinner').classList.add('hidden');
-            currentUserName = "";
-            currentUserClass = "";
-            currentUserSchool = "";
-            renderOwnerControls();
-        }
-
-        function triggerFileUpload() {
-            if (currentUserName !== OWNER_NAME) return;
-            document.getElementById('upload-input').click();
-        }
-
-        function handleFileUpload(event) {
-            if (currentUserName !== OWNER_NAME) return;
-            const files = Array.from(event.target.files || []);
-            if (!files.length) return;
-
-            files.forEach(file => {
-                uploadedFiles.unshift({
-                    file: file,
-                    name: file.name,
-                    type: file.type || 'unknown',
-                    sizeKB: Math.round(file.size / 1024),
-                    uploadedAt: new Date().toLocaleString()
-                });
-            });
-
-            renderLibraryFiles();
-            event.target.value = '';
-        }
-
-        function viewFile(index) {
-            const fileData = uploadedFiles[index];
-            if (!fileData || !fileData.file) return;
-
-            const url = URL.createObjectURL(fileData.file);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileData.name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function renameFile(index) {
-            if (currentUserName !== OWNER_NAME) {
-                alert('មានតែម្ចាស់ទេដែលអាចកែឈ្មោះឯកសារបាន។');
-                return;
+        // មុខងារផ្ទៀងផ្ទាត់សិទ្ធិ (Authentication Rule 3)
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth error:", error);
+                showToast("ការតភ្ជាប់ទៅកាន់ម៉ាស៊ីនមេមានបញ្ហា!", "error");
             }
-            const file = uploadedFiles[index];
-            if (!file) return;
-            const newName = prompt('បញ្ចូលឈ្មោះឯកសារថ្មី:', file.name);
-            if (!newName || !newName.trim()) return;
-            file.name = newName.trim();
-            renderLibraryFiles();
-        }
-
-        function deleteFile(index) {
-            if (currentUserName !== OWNER_NAME) {
-                alert('មានតែម្ចាស់ទេដែលអាចលុបឯកសារបាន។');
-                return;
-            }
-            if (confirm('តើអ្នកចង់លុបឯកសារនេះមែនទេ?')) {
-                uploadedFiles.splice(index, 1);
-                saveUploadedFiles();
-                renderLibraryFiles();
-            }
-        }
-
-        function renderLibraryFiles() {
-            const container = document.getElementById('uploaded-files-list');
-            if (!container) return;
-
-            if (uploadedFiles.length === 0) {
-                container.innerHTML = `<p class="text-gray-400 text-sm">មិនទាន់មានឯកសារត្រូវបានផ្ទុកឡើង។</p>`;
-                return;
-            }
-
-            container.innerHTML = uploadedFiles.map((file, index) => `
-                <div class="uploaded-file-card">
-                    <div class="file-info">
-                        <div class="font-bold mb-2">${file.name}</div>
-                        <div class="text-gray-500 text-sm">${file.type} · ${file.sizeKB} KB · ${file.uploadedAt}</div>
-                    </div>
-                    <div class="file-actions">
-                        <button class="file-btn view" onclick="viewFile(${index})">មើល</button>
-                        <button class="file-btn edit" onclick="renameFile(${index})" ${currentUserName !== OWNER_NAME ? 'disabled style="opacity: 0.5;" title="មានតែម្ចាស់ទេដែលអាចកែឈ្មោះបាន"' : ''}>កែឈ្មោះ</button>
-                        <button class="file-btn delete" onclick="deleteFile(${index})" ${currentUserName !== OWNER_NAME ? 'disabled style="opacity: 0.5;" title="មានតែម្ចាស់ទេដែលអាចលុបបាន"' : ''}>លុប</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function loadUploadedFiles() {
-            // Files are session-only, no persistence
-            renderLibraryFiles();
-        }
-
-        function applySavedOwnerEdits() {
-            const saved = JSON.parse(localStorage.getItem('ownerEdits') || '{}');
-            Object.entries(saved).forEach(([key, value]) => {
-                const el = document.querySelector(`[data-edit-key="${key}"]`);
-                if (el) el.innerText = value;
-            });
-        }
-
-        function renderOwnerControls() {
-            const ownerControls = document.getElementById('owner-controls');
-            if (currentUserName === OWNER_NAME) {
-                ownerControls.classList.remove('hidden');
-            } else {
-                ownerControls.classList.add('hidden');
-                ownerEditActive = false;
-                disableOwnerEditing();
-            }
-        }
-
-        function toggleOwnerEdit() {
-            ownerEditActive = !ownerEditActive;
-            const toggleBtn = document.getElementById('owner-edit-toggle');
-            if (ownerEditActive) {
-                enableOwnerEditing();
-                toggleBtn.innerText = 'រក្សាទុកការកែប្រែ';
-            } else {
-                saveOwnerEdits();
-                disableOwnerEditing();
-                toggleBtn.innerText = 'កែសម្រួលទំព័រ';
-            }
-        }
-
-        function enableOwnerEditing() {
-            document.querySelectorAll('.owner-editable').forEach(el => {
-                el.setAttribute('contenteditable', 'true');
-            });
-        }
-
-        function disableOwnerEditing() {
-            document.querySelectorAll('.owner-editable').forEach(el => {
-                el.removeAttribute('contenteditable');
-            });
-        }
-
-        function saveOwnerEdits() {
-            const edits = {};
-            document.querySelectorAll('.owner-editable').forEach(el => {
-                edits[el.dataset.editKey] = el.innerText.trim();
-            });
-            localStorage.setItem('ownerEdits', JSON.stringify(edits));
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full text-sm z-[7000] animate-spring';
-            alertDiv.innerText = 'ការកែប្រែបានរក្សាទុក។';
-            document.body.appendChild(alertDiv);
-            setTimeout(() => alertDiv.remove(), 2500);
-        }
-
-        function switchTab(el, viewId, title) {
-            if(el) {
-                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-                el.classList.add('active');
-            }
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            document.getElementById('view-header').innerText = title;
-        }
-
-        // GRADE MODAL LOGIC
-        function openGradeModal(subject) {
-            currentSubject = subject;
-            document.getElementById('grade-modal-subject').innerText = "មុខវិជ្ជា៖ " + subject;
-            const modal = document.getElementById('grade-modal');
-            modal.classList.add('active');
-            if (window.navigator.vibrate) window.navigator.vibrate(15);
-        }
-
-        function closeGradeModal(e) {
-            document.getElementById('grade-modal').classList.remove('active');
-        }
-
-        function selectGrade(grade) {
-            closeGradeModal();
-            // បង្ហាញការស្វាគមន៍ ឬនាំទៅកាន់ទំព័រមេរៀន
-            setTimeout(() => {
-                const msg = `កំពុងរៀបចំមេរៀន ${currentSubject} សម្រាប់ថ្នាក់ទី ${grade}...`;
-                // ជំនួសដោយ Alert សាមញ្ញ (ក្នុងកម្មវិធីពិតនឹងប្តូរ View)
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-black/80 text-white px-6 py-3 rounded-full text-sm z-[7000] animate-spring';
-                alertDiv.innerText = msg;
-                document.body.appendChild(alertDiv);
-                setTimeout(() => alertDiv.remove(), 3000);
-            }, 400);
-        }
-
-        function openAboutModal() {
-            document.getElementById('about-modal').classList.add('active');
-        }
-
-        function closeAboutModal(event) {
-            if (event && event.target !== event.currentTarget) return;
-            document.getElementById('about-modal').classList.remove('active');
-        }
-
-        window.onload = () => {
-            applySavedOwnerEdits();
-            loadUploadedFiles();
-            const days = ['អាទិត្យ', 'ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
-            const months = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
-            const d = new Date();
-            document.getElementById('date-label').innerText = `ថ្ងៃ${days[d.getDay()]} ទី${d.getDate()} ខែ${months[d.getMonth()]}`;
         };
+
+        // ចាប់ផ្តើមកម្មវិធី និងទាញយកទិន្នន័យ (Rule 3 Flow)
+        window.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+            await initAuth();
+
+            // តាមដានស្ថានភាពគណនី និងទាញយកទិន្នន័យពេលវេលាជាក់ស្តែង (Real-time listener)
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    
+                    // ផ្លូវផ្ទុកទិន្នន័យសាធារណៈ (Rule 1: /artifacts/{appId}/public/data/students)
+                    const studentsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+                    
+                    // ទាញយកទិន្នន័យពេលមានការកែប្រែដោយមិនប្រើ complex query (Rule 2)
+                    onSnapshot(studentsCollection, (snapshot) => {
+                        students = [];
+                        snapshot.forEach((doc) => {
+                            students.push({ id: doc.id, ...doc.data() });
+                        });
+
+                        // រៀបចំលំដាប់ឈ្មោះសិស្សតាមពេលវេលាចុះឈ្មោះក្នុង Memory (Rule 2)
+                        students.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                        
+                        // លាក់ Loader នៃប្រព័ន្ធទិន្នន័យ
+                        document.getElementById('loadingDatabase').classList.add('hidden');
+                        
+                        renderStudents();
+                    }, (error) => {
+                        console.error("Database listener error:", error);
+                        showToast("មានកំហុសក្នុងការទាញយកទិន្នន័យផ្សាយផ្ទាល់!", "error");
+                    });
+                }
+            });
+        });
+
+        // មុខងារបង្ហាញបញ្ជីឈ្មោះសិស្ស (Render Synced Student List)
+        window.renderStudents = function() {
+            const container = document.getElementById('studentListContainer');
+            container.innerHTML = '';
+
+            if (students.length === 0) {
+                container.innerHTML = `
+                    <div class="py-12 text-center text-slate-400 flex flex-col items-center justify-center">
+                        <i data-lucide="cloud-off" class="w-8 h-8 mb-1.5 text-slate-300"></i>
+                        <p class="text-xs font-semibold">មិនទាន់មានឈ្មោះសិស្សក្នុងបញ្ជីទេ</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">សូមបញ្ចូលឈ្មោះថ្មីនៅផ្នែកខាងស្តាំ!</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                updateTotalBadge(0);
+                return;
+            }
+
+            students.forEach(student => {
+                const isSelected = student.id === selectedStudentId;
+                const item = document.createElement('div');
+                item.className = `flex items-center justify-between p-2.5 md:p-3 rounded-lg cursor-pointer transition-all active:scale-[0.99] select-none ${
+                    isSelected 
+                        ? 'bg-indigo-50/70 border border-indigo-600/80 text-indigo-900 font-bold' 
+                        : 'bg-white border border-slate-200/50 hover:border-slate-300 text-slate-700'
+                }`;
+                item.onclick = () => selectStudent(student.id);
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs ${
+                            isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'
+                        }">
+                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <span class="text-xs md:text-sm truncate max-w-[150px] sm:max-w-xs">${student.name}</span>
+                    </div>
+                    ${isSelected ? `
+                        <div class="w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center text-white shrink-0">
+                            <i data-lucide="check" class="w-3 h-3"></i>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(item);
+            });
+
+            lucide.createIcons();
+            updateTotalBadge(students.length);
+        }
+
+        // មុខងារជ្រើសរើសសិស្ស (Select Student)
+        window.selectStudent = function(id) {
+            selectedStudentId = id;
+            const student = students.find(s => s.id === id);
+            
+            document.getElementById('clearSelectionBtn').style.display = 'block';
+
+            const genBtn = document.getElementById('generateCodeBtn');
+            genBtn.removeAttribute('disabled');
+            genBtn.className = "w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer transition-all text-xs";
+
+            document.getElementById('selectedNameDisplay').innerHTML = `
+                <span class="text-indigo-600">${student.name}</span>
+            `;
+
+            renderStudents();
+        }
+
+        // មុខងារលុបការជ្រើសរើស (Clear Selection)
+        window.clearSelection = function() {
+            selectedStudentId = null;
+            document.getElementById('clearSelectionBtn').style.display = 'none';
+
+            const genBtn = document.getElementById('generateCodeBtn');
+            genBtn.setAttribute('disabled', 'true');
+            genBtn.className = "w-full sm:w-auto bg-slate-200 text-slate-400 cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-sm text-xs";
+
+            document.getElementById('selectedNameDisplay').innerText = "មិនទាន់ជ្រើសរើសឈ្មោះនៅឡើយទេ";
+
+            renderStudents();
+        }
+
+        // មុខងារបញ្ចូលឈ្មោះទៅកាន់ប្រព័ន្ធ Cloud (Input Student Name to Firestore)
+        window.registerNewStudent = async function() {
+            if (!currentUser) {
+                showToast("កំពុងភ្ជាប់ទៅកាន់ម៉ាស៊ីនមេ សូមព្យាយាមម្តងទៀត!", "error");
+                return;
+            }
+
+            const nameInput = document.getElementById('newStudentName');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                showToast("សូមបញ្ចូលឈ្មោះរបស់អ្នកមុននឹងចុចបញ្ជូន!", "error");
+                nameInput.focus();
+                return;
+            }
+
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.setAttribute('disabled', 'true');
+
+            try {
+                const studentsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+                const docRef = await addDoc(studentsCollection, {
+                    name: name,
+                    createdAt: Date.now(),
+                    createdBy: currentUser.uid
+                });
+
+                nameInput.value = '';
+                
+                selectStudent(docRef.id);
+                showToast(`បានបញ្ចូលឈ្មោះ ${name} ជោគជ័យ!`, "success");
+            } catch (error) {
+                console.error("Error adding student to cloud:", error);
+                showToast("ការបញ្ចូលឈ្មោះមិនជោគជ័យឡើយ!", "error");
+            } finally {
+                registerBtn.removeAttribute('disabled');
+            }
+        }
+
+        // មុខងារបង្កើតកូដសិស្ស
+        window.generateStudentCode = function() {
+            if (!selectedStudentId) return;
+
+            const student = students.find(s => s.id === selectedStudentId);
+            const randomCode = `ACD-${Math.floor(1000 + Math.random() * 9000)}-KH`;
+
+            const today = new Date();
+            const monthsInKhmer = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            const khmerDateStr = `${today.getDate()} ${monthsInKhmer[today.getMonth()]} ${today.getFullYear()}`;
+
+            document.getElementById('cardStudentName').innerText = student.name;
+            document.getElementById('cardStudentCode').innerText = randomCode;
+            document.getElementById('cardGenDate').innerText = khmerDateStr;
+
+            document.getElementById('setupView').classList.add('hidden');
+            document.getElementById('successView').classList.remove('hidden');
+
+            lucide.createIcons();
+            showToast("បានបង្កើតកូដសម្គាល់ខ្លួនជោគជ័យ!", "success");
+        }
+
+        // មុខងារចម្លងកូដទៅក្នុងក្តារតម្បៀត (Copy to clipboard)
+        window.copyToClipboard = function() {
+            const codeText = document.getElementById('cardStudentCode').innerText;
+            const studentName = document.getElementById('cardStudentName').innerText;
+            const tempText = `កូដសិស្ស៖ ${codeText} (ឈ្មោះ៖ ${studentName})`;
+
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = tempText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast("បានចម្លងកូដទុកជោគជ័យ!", "success");
+            } catch (err) {
+                showToast("មិនអាចចម្លងកូដបានទេ!", "error");
+            }
+            
+            document.body.removeChild(tempTextArea);
+        }
+
+        // មុខងារត្រឡប់ក្រោយវិញ (Reset App)
+        window.resetApp = function() {
+            document.getElementById('setupView').classList.remove('hidden');
+            document.getElementById('successView').classList.add('hidden');
+            clearSelection();
+        }
+
+        // បង្ហាញចំនួនសិស្សសរុប
+        function updateTotalBadge(count) {
+            document.getElementById('totalBadge').innerText = `សិស្សសរុប៖ ${count} នាក់`;
+        }
+
+        // បង្ហាញផ្ទាំងជូនដំណឹង (Toast Notification)
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.innerText = message;
+
+            if (type === "success") {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.className = "w-4 h-4 text-emerald-400 shrink-0";
+            } else {
+                toastIcon.setAttribute('data-lucide', 'alert-circle');
+                toastIcon.className = "w-4 h-4 text-rose-400 shrink-0";
+            }
+
+            lucide.createIcons();
+
+            toast.classList.remove('-translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-20', 'opacity-0');
+            }, 2500);
+        }
     </script>
 </body>
 </html>
+
+```
