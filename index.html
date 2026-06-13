@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ប្រព័ន្ធជ្រើសរើសឈ្មោះ និងបង្កើតកូដសិស្ស</title>
+    <title>ប្រព័ន្ធបង្កើតកូដសិស្ស</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for Khmer Language -->
@@ -17,203 +17,129 @@
             font-family: 'Kantumruy Pro', 'Noto Sans Khmer', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Custom scrollbar for student list to keep it minimal and clean */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col antialiased">
 
-    <!-- របារក្បាលទំព័រ / Sticky Header (Compact on Mobile) -->
+    <!-- របារក្បាលទំព័រ / Header -->
     <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm safe-top">
-        <div class="max-w-md md:max-w-4xl mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
+        <div class="max-w-md mx-auto px-4 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-100">
-                    <i data-lucide="graduation-cap" class="w-5 h-5 md:w-6 md:h-6"></i>
+                <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-100">
+                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-sm md:text-lg text-slate-900 leading-tight">ប្រព័ន្ធកូដសិស្ស (Cloud)</h1>
-                    <p class="text-[10px] md:text-xs text-slate-500">ទិន្នន័យរួមគ្នា និងផ្សាយបន្តផ្ទាល់</p>
+                    <h1 class="font-bold text-sm text-slate-900 leading-tight">ប្រព័ន្ធកូដសិស្ស (Cloud)</h1>
+                    <p class="text-[10px] text-slate-500">បញ្ចូលឈ្មោះ និងបង្កើតកូដសម្គាល់ខ្លួន</p>
                 </div>
             </div>
-            
-            <!-- សញ្ញាសម្គាល់ការភ្ជាប់ទិន្នន័យ (Connection Status) -->
-            <div class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-medium border border-emerald-100">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span class="text-[10px] md:text-xs">ផ្សាយផ្ទាល់</span>
-            </div>
+            <span class="text-[10px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-bold border border-indigo-100">
+                ជំនាន់ ២០២៦
+            </span>
         </div>
     </header>
 
     <!-- មាតិកាចម្បង / Main Content -->
-    <main class="flex-grow max-w-md md:max-w-4xl w-full mx-auto px-3 py-4 md:py-6 flex flex-col justify-start">
+    <main class="flex-grow max-w-md w-full mx-auto px-3 py-4 flex flex-col justify-start">
         
-        <!-- ប្រអប់ជូនដំណឹង (Toast Notification Overlay) -->
-        <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform -translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <!-- ប្រអប់ជូនដំណឹង (Toast Notification) -->
+        <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform -translate-y-20 opacity-0 transition-all duration-300 z-50 pointer-events-none w-[90%] max-w-xs justify-center">
             <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400 shrink-0"></i>
-            <span id="toastMessage" class="text-xs md:text-sm font-medium leading-snug">សារដំណឹង</span>
+            <span id="toastMessage" class="text-xs font-medium leading-snug">សារដំណឹង</span>
         </div>
 
-        <!-- កាតមេ / Main Interactive Card Container -->
-        <div class="bg-white rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden transition-all duration-500 flex flex-col" id="mainCard">
+        <!-- កាតមេ / Main Card -->
+        <div class="bg-white rounded-2xl border border-slate-150 shadow-sm overflow-hidden flex flex-col" id="mainCard">
             
-            <!-- ១. ទំព័រជ្រើសរើស និងបញ្ចូលឈ្មោះ (Selection & Input Panel) -->
-            <div id="setupView" class="block">
-                <div class="grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+            <!-- ១. ទំព័រវាយបញ្ចូលឈ្មោះ (Input Panel) -->
+            <div id="setupView" class="block p-5 space-y-5">
+                
+                <!-- ផ្នែកបញ្ចូលឈ្មោះ (Enter Name Form) -->
+                <div class="space-y-3.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span>
+                        <h2 class="text-sm md:text-base font-bold text-slate-800">បញ្ចូលឈ្មោះ / Enter Name</h2>
+                    </div>
                     
-                    <!-- ផ្នែកទី១៖ ជ្រើសរើsassិស្ស (Section 1: Select Student) -->
-                    <div class="p-4 md:p-6 md:col-span-7 flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2">
-                                <span class="w-1.5 h-5 bg-indigo-600 rounded-full"></span>
-                                <h2 class="text-sm md:text-base font-bold text-slate-800">១. ជ្រើសរើសឈ្មោះរបស់អ្នក</h2>
-                            </div>
-                            <!-- Loading Spinner on Synced -->
-                            <div id="loadingDatabase" class="text-slate-400">
-                                <div class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-500 border-t-transparent"></div>
-                            </div>
-                        </div>
-
-                        <!-- បញ្ជីឈ្មោះសិស្ស (Student List Box with height limits) -->
-                        <div class="border border-slate-200/60 rounded-xl overflow-hidden bg-slate-50/30">
-                            <div class="max-h-[220px] md:max-h-[280px] overflow-y-auto p-1.5 custom-scrollbar space-y-1" id="studentListContainer">
-                                <!-- Student items will be injected here dynamically -->
-                            </div>
-                        </div>
-
-                        <!-- ចំនួនសិស្សសរុប (Total Students Info) -->
-                        <div class="mt-2.5 flex justify-between items-center text-[11px] text-slate-400 px-1">
-                            <span id="totalBadge" class="font-medium">សិស្សសរុប៖ ទាញយក...</span>
-                            <span class="text-indigo-600 font-bold cursor-pointer hover:underline active:opacity-60" id="clearSelectionBtn" style="display: none;" onclick="clearSelection()">លុប</span>
-                        </div>
-                    </div>
-
-                    <!-- ផ្នែកទី២៖ បញ្ចូលឈ្មោះ (Section 2: Enter Name) -->
-                    <div class="p-4 md:p-6 md:col-span-5 bg-slate-50/20 flex flex-col justify-between">
+                    <div class="space-y-3">
                         <div>
-                            <div class="flex items-center gap-2 mb-3">
-                                <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span>
-                                <h2 class="text-sm md:text-base font-bold text-slate-800">២. បញ្ចូលឈ្មោះ / Enter Name</h2>
-                            </div>
-                            <p class="text-[11px] md:text-xs text-slate-400 mb-3 leading-relaxed">ប្រសិនបើគ្មានឈ្មោះក្នុងបញ្ជីខាងឆ្វេង សូមបញ្ចូលឈ្មោះថ្មីក្នុងប្រអប់នេះ។</p>
-
-                            <!-- ទម្រង់បញ្ចូលឈ្មោះ (Enter Name Form) -->
-                            <div class="space-y-2.5">
-                                <div>
-                                    <label for="newStudentName" class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">ឈ្មោះសិស្ស (ភាសាខ្មែរ ឬ English)</label>
-                                    <!-- ផ្លាស់ប្តូរ placeholder ទៅជា Enter Name យ៉ាងជាក់លាក់ -->
-                                    <input type="text" id="newStudentName" placeholder="Enter Name" 
-                                        class="w-full px-3 py-2.5 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all">
-                                </div>
-                                <button id="registerBtn" onclick="registerNewStudent()" 
-                                    class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] active:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all duration-200">
-                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> បញ្ចូលឈ្មោះ / Enter Name
-                                </button>
-                            </div>
+                            <label for="newStudentName" class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">ឈ្មោះសិស្ស (ភាសាខ្មែរ ឬឡាតាំង)</label>
+                            <input type="text" id="newStudentName" placeholder="Enter Name" 
+                                class="w-full px-4 py-3 border border-slate-200 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-xs md:text-sm">
                         </div>
-
-                        <!-- ព័ត៌មានណែនាំ / Hint Info -->
-                        <div class="mt-4 pt-3 border-t border-slate-100 hidden md:block">
-                            <div class="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
-                                <i data-lucide="cloud-lightning" class="w-3.5 h-3.5 text-indigo-500"></i>
-                                <span>ទិន្នន័យត្រូវបានភ្ជាប់គ្នាក្នុងពេលជាក់ស្តែង (Real-time)។</span>
-                            </div>
-                        </div>
+                        
+                        <button id="registerBtn" 
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] active:bg-indigo-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-indigo-100 flex items-center justify-center gap-2 transition-all text-xs disabled:opacity-50">
+                            <i data-lucide="qr-code" class="w-4 h-4"></i> បង្កើតកូដ / Generate Code
+                        </button>
                     </div>
-
                 </div>
 
-                <!-- របារសកម្មភាពបង្កើតកូដ (Sticky Bottom Action Bar) -->
-                <div class="bg-slate-50 px-4 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div class="text-center sm:text-left w-full sm:w-auto">
-                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">ឈ្មោះដែលបានជ្រើសរើស៖</p>
-                        <p id="selectedNameDisplay" class="font-bold text-slate-800 text-xs md:text-sm mt-0.5 truncate">មិនទាន់ជ្រើសរើសឈ្មោះនៅឡើយទេ</p>
-                    </div>
-                    <button id="generateCodeBtn" disabled onclick="generateStudentCode()"
-                        class="w-full sm:w-auto bg-slate-200 text-slate-400 cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300 text-xs">
-                        <i data-lucide="qr-code" class="w-4 h-4"></i> បង្កើតកូដ
-                    </button>
-                </div>
             </div>
 
-            <!-- ២. ទំព័របង្ហាញកូដជោគជ័យ (Success Code Generation View) -->
-            <div id="successView" class="hidden p-5 md:p-10 text-center flex flex-col items-center">
-                <!-- ចលនាជោគជ័យ (Success Animation Icon) -->
-                <div class="w-14 h-14 md:w-18 md:h-18 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-4 border-4 border-emerald-100">
-                    <i data-lucide="check" class="w-7 h-7 md:w-9 md:h-9"></i>
+            <!-- ២. ទំព័របង្ហាញកូដជោគជ័យ (Digital Card View) -->
+            <div id="successView" class="hidden p-5 text-center flex flex-col items-center">
+                <!-- ចលនាជោគជ័យ -->
+                <div class="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-4 border-4 border-emerald-100">
+                    <i data-lucide="check" class="w-7 h-7"></i>
                 </div>
 
-                <h2 class="text-lg md:text-xl font-black text-slate-900 mb-0.5">បង្កើតកូដបានជោគជ័យ!</h2>
-                <p class="text-slate-400 text-[10px] md:text-xs mb-5">សូមរក្សាទុក ឬចម្លងកូដសម្គាល់ខ្លួនរបស់អ្នក ដើម្បីប្រើប្រាស់ក្នុងគោលបំណងសិក្សា។</p>
+                <h2 class="text-base font-black text-slate-900 mb-0.5">បង្កើតកូដបានជោគជ័យ!</h2>
+                <p class="text-slate-400 text-[10px] mb-5">សូមរក្សាទុក ឬចម្លងកូដសម្គាល់ខ្លួនរបស់អ្នកខាងក្រោម</p>
 
-                <!-- កាតកូដសិស្ស (Student Digital Pass Card) -->
+                <!-- កាតកូដសិស្ស -->
                 <div class="w-full max-w-xs bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden mb-6 text-left">
                     <div class="absolute -right-8 -bottom-8 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
                     <div class="absolute -left-8 -top-8 w-20 h-20 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
                     
-                    <!-- ក្បាលកាត / Card Header -->
+                    <!-- ក្បាលកាត -->
                     <div class="flex justify-between items-start border-b border-white/20 pb-3 mb-3">
                         <div>
                             <p class="text-[8px] uppercase tracking-widest text-indigo-200">Student Identity Card</p>
-                            <h3 class="font-bold text-xs md:text-sm mt-0.5 text-white">កាតសម្គាល់សិស្ស</h3>
+                            <h3 class="font-bold text-xs mt-0.5 text-white">កាតសម្គាល់សិស្ស</h3>
                         </div>
                         <div class="bg-white/10 p-1 rounded-lg border border-white/10">
                             <i data-lucide="graduation-cap" class="w-4 h-4 text-white"></i>
                         </div>
                     </div>
 
-                    <!-- ព័ត៌មានសិស្ស / Student Card Body -->
+                    <!-- ព័ត៌មានសិស្ស -->
                     <div class="space-y-3">
                         <div>
                             <p class="text-[8px] text-indigo-200 uppercase tracking-wider">ឈ្មោះសិស្ស / Name</p>
-                            <p id="cardStudentName" class="font-bold text-sm md:text-base text-white">សុខ ជា</p>
+                            <p id="cardStudentName" class="font-bold text-sm text-white">សុខ ជា</p>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <p class="text-[8px] text-indigo-200 uppercase tracking-wider">កាលបរិច្ឆេទ / Date</p>
-                                <p id="cardGenDate" class="font-semibold text-[11px] text-white">១១ មិថុនា ២០២៦</p>
+                                <p id="cardGenDate" class="font-semibold text-[10px] text-white">១១ មិថុនា ២០២៦</p>
                             </div>
                             <div>
                                 <p class="text-[8px] text-indigo-200 uppercase tracking-wider">ស្ថានភាព / Status</p>
-                                <p class="font-semibold text-[11px] text-white flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> សកម្ម</p>
+                                <p class="font-semibold text-[10px] text-white flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> សកម្ម</p>
                             </div>
                         </div>
 
-                        <!-- កូដសម្គាល់ / The Generated Code Area -->
+                        <!-- កូដសម្គាល់ -->
                         <div class="bg-black/25 rounded-xl p-2.5 border border-white/10 flex items-center justify-between">
                             <div>
                                 <p class="text-[7px] text-indigo-200 uppercase tracking-wider">កូដសិស្ស / ID Code</p>
                                 <p id="cardStudentCode" class="font-mono font-bold text-sm tracking-wider text-yellow-300">ACD-0000-KH</p>
                             </div>
-                            <button onclick="copyToClipboard()" class="bg-white/10 hover:bg-white/20 active:scale-95 text-white p-1.5 rounded-lg transition-all" title="ចម្លងកូដ">
+                            <button id="copyCardBtn" class="bg-white/10 hover:bg-white/20 active:scale-95 text-white p-1.5 rounded-lg transition-all" title="ចម្លងកូដ">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- ប៊ូតុងត្រឡប់ក្រោយ / Action Buttons -->
+                <!-- ប៊ូតុងសកម្មភាព -->
                 <div class="flex flex-col sm:flex-row gap-2 w-full max-w-xs">
-                    <button onclick="copyToClipboard()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200">
+                    <button id="copySuccessBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all text-xs">
                         <i data-lucide="copy" class="w-3.5 h-3.5"></i> ចម្លងកូដទុក
                     </button>
-                    <button onclick="resetApp()" class="flex-1 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200">
+                    <button id="resetAppBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 border border-slate-200 transition-all text-xs">
                         <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> ត្រឡប់ក្រោយ
                     </button>
                 </div>
@@ -224,30 +150,40 @@
     </main>
 
     <!-- ជើងទំព័រ / Footer -->
-    <footer class="bg-white border-t border-slate-100 py-3 text-center text-[10px] text-slate-400 mt-auto safe-bottom">
+    <footer class="bg-white border-t border-slate-100 py-3.5 text-center text-[9px] text-slate-400 mt-auto safe-bottom">
         <p>© ២០២៦ ប្រព័ន្ធគ្រប់គ្រងសាលារៀនឌីជីថល (ភ្ជាប់ប្រព័ន្ធពពក)។</p>
     </footer>
 
-    <!-- Firebase SDK Imports -->
+    <!-- Firebase SDK Imports & Logic Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // បណ្តុំអថេរ និងការកំណត់ទិន្នន័យ / Global Variables
-        let students = [];
-        let selectedStudentId = null;
         let currentUser = null;
 
         // ការកំណត់រចនាសម្ព័ន្ធ Firebase ពីប្រព័ន្ធសុវត្ថិភាព
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        let firebaseConfig = {};
+        try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        } catch (e) {
+            console.error("Firebase config parse error:", e);
+        }
+
+        const hasFirebaseConfig = firebaseConfig && Object.keys(firebaseConfig).length > 0;
+        const app = hasFirebaseConfig ? initializeApp(firebaseConfig) : null;
+        const auth = hasFirebaseConfig ? getAuth(app) : null;
+        const db = hasFirebaseConfig ? getFirestore(app) : null;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         // មុខងារផ្ទៀងផ្ទាត់សិទ្ធិ (Authentication Rule 3)
         const initAuth = async () => {
+            if (!hasFirebaseConfig) {
+                console.warn("Firebase config missing. Running in local fallback mode.");
+                return;
+            }
+
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
@@ -255,227 +191,175 @@
                     await signInAnonymously(auth);
                 }
             } catch (error) {
-                console.error("Auth error:", error);
-                showToast("ការតភ្ជាប់ទៅកាន់ម៉ាស៊ីនមេមានបញ្ហា!", "error");
+                console.error("Primary Auth error:", error);
+                try {
+                    await signInAnonymously(auth);
+                } catch (anonError) {
+                    console.error("Anonymous auth fallback error:", anonError);
+                    showToast("ការតភ្ជាប់ទៅកាន់ម៉ាស៊ីនមេមានបញ្ហា!", "error");
+                }
             }
         };
 
-        // ចាប់ផ្តើមកម្មវិធី និងទាញយកទិន្នន័យ (Rule 3 Flow)
+        // ភ្ជាប់ព្រឹត្តិការណ៍ចុចលើប៊ូតុងទាំងឡាយដោយប្រើ JavaScript
+        const setupEventListeners = () => {
+            // ប៊ូតុង បង្កើតកូដ / Generate Code
+            const registerBtn = document.getElementById('registerBtn');
+            if (registerBtn) {
+                registerBtn.addEventListener('click', registerNewStudent);
+            }
+
+            // ប៊ូតុង ចម្លងកូដ នៅក្នុងកាត
+            const copyCardBtn = document.getElementById('copyCardBtn');
+            if (copyCardBtn) {
+                copyCardBtn.addEventListener('click', copyToClipboard);
+            }
+
+            // ប៊ូតុង ចម្លងកូដ ពណ៌ខៀវខាងក្រោម
+            const copySuccessBtn = document.getElementById('copySuccessBtn');
+            if (copySuccessBtn) {
+                copySuccessBtn.addEventListener('click', copyToClipboard);
+            }
+
+            // ប៊ូតុង ត្រឡប់ក្រោយ
+            const resetAppBtn = document.getElementById('resetAppBtn');
+            if (resetAppBtn) {
+                resetAppBtn.addEventListener('click', resetApp);
+            }
+        };
+
+        // ចាប់ផ្តើមកម្មវិធី
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
+            setupEventListeners();
             await initAuth();
 
-            // តាមដានស្ថានភាពគណនី និងទាញយកទិន្នន័យពេលវេលាជាក់ស��តែង (Real-time listener)
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    currentUser = user;
-                    
-                    // ផ្លូវផ្ទុកទិន្នន័យសាធារណៈ (Rule 1: /artifacts/{appId}/public/data/students)
-                    const studentsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'students');
-                    
-                    // ទាញយកទិន្នន័យពេលមានការកែប្រែដោយមិនប្រើ complex query (Rule 2)
-                    onSnapshot(studentsCollection, (snapshot) => {
-                        students = [];
-                        snapshot.forEach((doc) => {
-                            students.push({ id: doc.id, ...doc.data() });
-                        });
-
-                        // រៀបចំលំដាប់ឈ្មោះសិស្សតាមពេលវេលាចុះឈ្មោះក្នុង Memory (Rule 2)
-                        students.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                        
-                        // លាក់ Loader នៃប្រព័ន្ធទិន្នន័យ
-                        document.getElementById('loadingDatabase').classList.add('hidden');
-                        
-                        renderStudents();
-                    }, (error) => {
-                        console.error("Database listener error:", error);
-                        showToast("មានកំហុសក្នុងការទាញយកទិន្នន័យផ្សាយផ្ទាល់!", "error");
-                    });
-                }
-            });
+            if (hasFirebaseConfig && auth) {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                    }
+                });
+            } else {
+                showToast("Firebase config missing, running in local mode.", "error");
+            }
         });
 
-        // មុខងារបង្ហាញបញ្ជីឈ្មោះសិស្ស (Render Synced Student List)
-        window.renderStudents = function() {
-            const container = document.getElementById('studentListContainer');
-            container.innerHTML = '';
-
-            if (students.length === 0) {
-                container.innerHTML = `
-                    <div class="py-12 text-center text-slate-400 flex flex-col items-center justify-center">
-                        <i data-lucide="cloud-off" class="w-8 h-8 mb-1.5 text-slate-300"></i>
-                        <p class="text-xs font-semibold">មិនទាន់មានឈ្មោះសិស្សក្នុងបញ្ជីទេ</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">សូមបញ្ចូលឈ្មោះថ្មីនៅផ្នែកខាងស្តាំ!</p>
-                    </div>
-                `;
-                lucide.createIcons();
-                updateTotalBadge(0);
-                return;
-            }
-
-            students.forEach(student => {
-                const isSelected = student.id === selectedStudentId;
-                const item = document.createElement('div');
-                item.className = `flex items-center justify-between p-2.5 md:p-3 rounded-lg cursor-pointer transition-all active:scale-[0.99] select-none ${
-                    isSelected 
-                        ? 'bg-indigo-50/70 border border-indigo-600/80 text-indigo-900 font-bold' 
-                        : 'bg-white border border-slate-200/50 hover:border-slate-300 text-slate-700'
-                }`;
-                item.onclick = () => selectStudent(student.id);
-
-                item.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs ${
-                            isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'
-                        }">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <span class="text-xs md:text-sm truncate max-w-[150px] sm:max-w-xs">${student.name}</span>
-                    </div>
-                    ${isSelected ? `
-                        <div class="w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center text-white shrink-0">
-                            <i data-lucide="check" class="w-3 h-3"></i>
-                        </div>
-                    ` : ''}
-                `;
-                container.appendChild(item);
-            });
-
-            lucide.createIcons();
-            updateTotalBadge(students.length);
-        }
-
-        // មុខងារជ្រើសរើសិស្ស (Select Student)
-        window.selectStudent = function(id) {
-            selectedStudentId = id;
-            const student = students.find(s => s.id === id);
-            
-            document.getElementById('clearSelectionBtn').style.display = 'block';
-
-            const genBtn = document.getElementById('generateCodeBtn');
-            genBtn.removeAttribute('disabled');
-            genBtn.className = "w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all duration-200 text-xs";
-
-            document.getElementById('selectedNameDisplay').innerHTML = `
-                <span class="text-indigo-600">${student.name}</span>
-            `;
-
-            renderStudents();
-        }
-
-        // មុខងារលុបការជ្រើសរើស (Clear Selection)
-        window.clearSelection = function() {
-            selectedStudentId = null;
-            document.getElementById('clearSelectionBtn').style.display = 'none';
-
-            const genBtn = document.getElementById('generateCodeBtn');
-            genBtn.setAttribute('disabled', 'true');
-            genBtn.className = "w-full sm:w-auto bg-slate-200 text-slate-400 cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-sm text-xs";
-
-            document.getElementById('selectedNameDisplay').innerText = "មិនទាន់ជ្រើសរើសឈ្មោះនៅឡើយទេ";
-
-            renderStudents();
-        }
-
-        // មុខងារបញ្ចូលឈ្មោះទៅកាន់ប្រព័ន្ធ Cloud (Input Student Name to Firestore)
-        window.registerNewStudent = async function() {
-            if (!currentUser) {
-                showToast("កំពុងភ្ជាប់ទៅកាន់ម៉ាស៊ីនមេ សូមព្យាយាមម្តងទៀត!", "error");
-                return;
-            }
-
-            const nameInput = document.getElementById('newStudentName');
-            const name = nameInput.value.trim();
-
-            if (!name) {
-                showToast("សូមបញ្ចូលឈ្មោះរបស់អ្នកមុននឹងចុចបញ្ជូន!", "error");
-                nameInput.focus();
-                return;
-            }
-
-            const registerBtn = document.getElementById('registerBtn');
-            registerBtn.setAttribute('disabled', 'true');
-
-            try {
-                const studentsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'students');
-                const docRef = await addDoc(studentsCollection, {
-                    name: name,
-                    createdAt: Date.now(),
-                    createdBy: currentUser.uid
-                });
-
-                nameInput.value = '';
-                
-                selectStudent(docRef.id);
-                showToast(`បានបញ្ចូលឈ្មោះ ${name} ជោគជ័យ!`, "success");
-            } catch (error) {
-                console.error("Error adding student to cloud:", error);
-                showToast("ការបញ្ចូលឈ្មោះមិនជោគជ័យឡើយ!", "error");
-            } finally {
-                registerBtn.removeAttribute('disabled');
-            }
-        }
-
-        // មុខងារបង្កើតកូដសិស្ស
-        window.generateStudentCode = function() {
-            if (!selectedStudentId) return;
-
-            const student = students.find(s => s.id === selectedStudentId);
-            const randomCode = `ACD-${Math.floor(1000 + Math.random() * 9000)}-KH`;
-
-            const today = new Date();
+        // មុខងារបង្ហាញកាតសម្រាប់សិស្ស
+        const showCardForStudent = (studentId, studentName, timestamp) => {
+            const today = new Date(timestamp || Date.now());
             const monthsInKhmer = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
             const khmerDateStr = `${today.getDate()} ${monthsInKhmer[today.getMonth()]} ${today.getFullYear()}`;
 
-            document.getElementById('cardStudentName').innerText = student.name;
-            document.getElementById('cardStudentCode').innerText = randomCode;
+            // បង្កើតកូដ ACD-XXXX-KH ដោយផ្អែកលើ ID សិស្សឱ្យនៅថេរ
+            const idInt = parseInt(studentId.slice(-4)) || Math.floor(1000 + Math.random() * 9000);
+            const stableCode = `ACD-${1000 + (idInt % 9000)}-KH`;
+
+            document.getElementById('cardStudentName').innerText = studentName;
+            document.getElementById('cardStudentCode').innerText = stableCode;
             document.getElementById('cardGenDate').innerText = khmerDateStr;
 
             document.getElementById('setupView').classList.add('hidden');
             document.getElementById('successView').classList.remove('hidden');
 
             lucide.createIcons();
-            showToast("បានបង្កើតកូដសម្គាល់ខ្លួនជោគជ័យ!", "success");
-        }
+        };
+
+        // មុខងារបញ្ចូលឈ្មោះទៅកាន់ប្រព័ន្ធ Cloud (Input Student Name & Auto Generate)
+        const registerNewStudent = async () => {
+            const nameInput = document.getElementById('newStudentName');
+            if (!nameInput) return;
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                showToast("សូមបញ្ចូលឈ្មោះរបស់អ្នកមុននឹងចុចបង្កើតកូដ!", "error");
+                nameInput.focus();
+                return;
+            }
+
+            const registerBtn = document.getElementById('registerBtn');
+            if (registerBtn) registerBtn.setAttribute('disabled', 'true');
+
+            try {
+                const timestamp = Date.now();
+
+                if (hasFirebaseConfig && db) {
+                    const studentsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+                    const docRef = await addDoc(studentsCollection, {
+                        name: name,
+                        createdAt: timestamp,
+                        createdBy: currentUser ? currentUser.uid : 'unknown'
+                    });
+
+                    nameInput.value = '';
+                    showCardForStudent(docRef.id, name, timestamp);
+                    showToast(`បានបញ្ចូលឈ្មោះ ${name} រួចរាល់!`, "success");
+                } else {
+                    const localId = `local-${timestamp}`;
+                    nameInput.value = '';
+                    showCardForStudent(localId, name, timestamp);
+                    showToast(`Local mode: កូដសម្រាប់ ${name} ត្រូវបានបង្កើត!`, "success");
+                }
+            } catch (error) {
+                console.error("Error adding student:", error);
+                showToast("ការបញ្ចូលឈ្មោះមិនជោគជ័យឡើយ!", "error");
+            } finally {
+                if (registerBtn) registerBtn.removeAttribute('disabled');
+            }
+        };
 
         // មុខងារចម្លងកូដទៅក្នុងក្តារតម្បៀត (Copy to clipboard)
-        window.copyToClipboard = function() {
-            const codeText = document.getElementById('cardStudentCode').innerText;
-            const studentName = document.getElementById('cardStudentName').innerText;
-            const tempText = `កូដសិស្ស៖ ${codeText} (ឈ្មោះ៖ ${studentName})`;
+        const copyToClipboard = async () => {
+            const codeCard = document.getElementById('cardStudentCode');
+            const nameCard = document.getElementById('cardStudentName');
+            if (!codeCard || !nameCard) return;
+
+            const codeText = codeCard.innerText;
+            const studentName = nameCard.innerText;
+            const textToCopy = `កូដសិស្ស៖ ${codeText} (ឈ្មោះ៖ ${studentName})`;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    showToast("បានចម្លងកូដទុកជោគជ័យ!", "success");
+                    return;
+                } catch (err) {
+                    console.warn("Clipboard API failed, falling back to execCommand.", err);
+                }
+            }
 
             const tempTextArea = document.createElement("textarea");
-            tempTextArea.value = tempText;
+            tempTextArea.value = textToCopy;
+            tempTextArea.style.position = 'fixed';
+            tempTextArea.style.left = '-9999px';
             document.body.appendChild(tempTextArea);
             tempTextArea.select();
-            
+            tempTextArea.setSelectionRange(0, tempTextArea.value.length);
+
             try {
                 document.execCommand('copy');
                 showToast("បានចម្លងកូដទុកជោគជ័យ!", "success");
             } catch (err) {
                 showToast("មិនអាចចម្លងកូដបានទេ!", "error");
             }
-            
+
             document.body.removeChild(tempTextArea);
-        }
+        };
 
         // មុខងារត្រឡប់ក្រោយវិញ (Reset App)
-        window.resetApp = function() {
-            document.getElementById('setupView').classList.remove('hidden');
-            document.getElementById('successView').classList.add('hidden');
-            clearSelection();
-        }
-
-        // បង្ហាញចំនួនសិស្ស (Update Total Students Count)
-        function updateTotalBadge(count) {
-            document.getElementById('totalBadge').innerText = `សិស្សសរុប៖ ${count} នាក់`;
-        }
+        const resetApp = () => {
+            const setupView = document.getElementById('setupView');
+            const successView = document.getElementById('successView');
+            if (setupView) setupView.classList.remove('hidden');
+            if (successView) successView.classList.add('hidden');
+        };
 
         // បង្ហាញផ្ទាំងជូនដំណឹង (Toast Notification)
-        function showToast(message, type = "success") {
+        const showToast = (message, type = "success") => {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
             const toastIcon = document.getElementById('toastIcon');
+            if (!toast || !toastMessage || !toastIcon) return;
 
             toastMessage.innerText = message;
 
@@ -496,7 +380,7 @@
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('-translate-y-20', 'opacity-0');
             }, 2500);
-        }
+        };
     </script>
 </body>
 </html>
